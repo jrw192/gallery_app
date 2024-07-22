@@ -1,3 +1,7 @@
+.body {
+	width: 50%;
+}
+
 .palette {
 	display: inline-block;
 	float: left;

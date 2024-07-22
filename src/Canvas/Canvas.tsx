@@ -1,5 +1,5 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import './Canvas.css';
 
 export const Canvas = () => {
@@ -8,7 +8,10 @@ export const Canvas = () => {
 
 	const [myStrokeStyle, setMyStrokeStyle] = useState('');
   	const [myLineWidth, setMyLineWidth] = useState(0);
-  	const [myuserName, setMyUserName] = useState('');
+  	const [userData, setUserData] = useState({
+  		username: '',
+  		password: '',
+  	});
 
 
 	let isPainting: boolean = false;
@@ -21,8 +24,7 @@ export const Canvas = () => {
 			canvas.height = 500;
 			ctx = canvas.getContext('2d');
 			if (ctx) {
-				ctx.fillStyle = 'white';
-				ctx.fillRect(0, 0, canvas.width, canvas.height);
+				clear();
 
 				ctx.lineJoin = 'round';
 				ctx.lineCap = 'round';
@@ -42,7 +44,7 @@ export const Canvas = () => {
 		}
 	  }, [myStrokeStyle, myLineWidth]);
 
-	let onMouseDown = ({nativeEvent}: React.MouseEvent<Element, MouseEvent>) => {
+	let startPainting = ({nativeEvent}: React.MouseEvent<Element, MouseEvent>) => {
 		prevPos = { offsetX: nativeEvent.offsetX, offsetY: nativeEvent.offsetY };
 		isPainting = true;
 		
@@ -50,7 +52,7 @@ export const Canvas = () => {
 		paint(prevPos, offSetData, myStrokeStyle);
 	}
 
-	let onMouseMove = ({ nativeEvent }: React.MouseEvent<Element, MouseEvent>) => {
+	let createLine = ({ nativeEvent }: React.MouseEvent<Element, MouseEvent>) => {
 		if (isPainting) {
 			const offsetData = { offsetX: nativeEvent.offsetX, offsetY: nativeEvent.offsetY };
 			// Set the start and stop position of the paint event.
@@ -82,56 +84,95 @@ export const Canvas = () => {
 		}
 	}
 
-	let endPaintEvent = () => {
+	let stopPainting = () => {
 		if (isPainting) {
 			isPainting = false;
 		}
 	}
 
-	let onColorClick = (e: React.MouseEvent<Element, MouseEvent>) => {
+	let setColor = (e: React.MouseEvent<Element, MouseEvent>) => {
 		setMyStrokeStyle(window.getComputedStyle(e.target as Element, null)
-								.getPropertyValue("background-color"));
+								.getPropertyValue('background-color'));
 		setMyLineWidth(5);
 		if (ctx) {
 			ctx.lineWidth = 5;
 		}
 	}
 
-	let eraserFunc = (e: React.MouseEvent<Element, MouseEvent>) => {
-		setMyStrokeStyle('black');
+	let erase = (e: React.MouseEvent<Element, MouseEvent>) => {
+		setMyStrokeStyle('white');
 		setMyLineWidth(20);
 		if (ctx) {
 			ctx.lineWidth = 20;
 		}
 	}
 
+	let clear = () => {
+		if (canvas && ctx) {
+			ctx.fillStyle = 'white';
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+		}
+	}
+
+	let save = () => {
+		if (canvas) {
+			const dataURL = canvas.toDataURL();
+			let link = document.createElement('a');
+			link.setAttribute('href', dataURL);
+			link.setAttribute('download', 'eeeee' + '.png');
+			link.click();
+		}
+	}
+
+	let handleUserLogin = (e: ChangeEvent<HTMLInputElement>) => {
+		console.log(e);
+		const { name, value } = e.target;
+		console.log(name, value);
+		setUserData(data => ({
+	      ...data,
+	      [name]: value
+	    }));
+	}
+
 
 	return(
-		<div className="body">
-			<div className="palette">
+		<div className='body'>
+			<input placeholder={'Username'}
+					required={true}
+					name='username'
+					value={userData.username}
+					onChange={handleUserLogin}></input>
+			<input placeholder={'Password'}
+					required={true}
+					name='password'
+					value={userData.password}
+					onChange={handleUserLogin}></input>
+			<button onClick={() => clear()}>Start over</button>
+			<button onClick={() => save()}>Save</button>
+			<div className='palette'>
 				<div style={{
 					backgroundColor: myStrokeStyle,
 					borderRadius: '50%',
 				}}></div>
-				<div className="colorOption" style={{backgroundColor: 'black'}} onClick={onColorClick}></div>
-				<div className="colorOption" style={{backgroundColor: 'red'}} onClick={onColorClick}></div>
-				<div className="colorOption" style={{backgroundColor: 'green'}} onClick={onColorClick}></div>
-				<div className="colorOption" style={{backgroundColor: 'yellow'}} onClick={onColorClick}></div>
-				<div className="colorOption" style={{backgroundColor: 'blue'}} onClick={onColorClick}></div>
-				<div className="colorOption" style={{backgroundColor: 'pink'}} onClick={onColorClick}></div>
+				<div className='colorOption' style={{backgroundColor: 'black'}} onClick={setColor}></div>
+				<div className='colorOption' style={{backgroundColor: 'red'}} onClick={setColor}></div>
+				<div className='colorOption' style={{backgroundColor: 'green'}} onClick={setColor}></div>
+				<div className='colorOption' style={{backgroundColor: 'yellow'}} onClick={setColor}></div>
+				<div className='colorOption' style={{backgroundColor: 'blue'}} onClick={setColor}></div>
+				<div className='colorOption' style={{backgroundColor: 'pink'}} onClick={setColor}></div>
 				{/*<img src={EraserIcon} style={{height: '20px', width: '20px', border: '1px solid black'}}
 					onClick={eraserFunc}></img>*/}
-				<div style={{height: '20px', width: '20px', border: '1px solid black'}} onClick={eraserFunc}>E</div>
+				<div style={{height: '20px', width: '20px', border: '1px solid black'}} onClick={erase}>E</div>
 			</div>
 			<div>
-				<canvas className="canvas"
+				<canvas className='canvas'
 					// We use the ref attribute to get direct access to the canvas element. 
 					ref={(ref) => (canvas = ref)}
 					style={{position: 'absolute', display: 'inline-block'}}
-					onMouseDown={onMouseDown}
-					onMouseLeave={endPaintEvent}
-					onMouseUp={endPaintEvent}
-					onMouseMove={onMouseMove}
+					onMouseDown={startPainting}
+					onMouseLeave={stopPainting}
+					onMouseUp={stopPainting}
+					onMouseMove={createLine}
 				/>
 			</div>
 		</div>
