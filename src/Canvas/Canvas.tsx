@@ -7,25 +7,21 @@ export const Canvas = () => {
 	let ctx: CanvasRenderingContext2D|null;
 
 	const [myStrokeStyle, setMyStrokeStyle] = useState('');
-  	const [mylineWidth, setMyLineWidth] = useState(0);
+  	const [myLineWidth, setMyLineWidth] = useState(0);
   	const [myuserName, setMyUserName] = useState('');
 
 
 	let isPainting: boolean = false;
-	let line: { start: any; stop: any; }[] = [];
 	let prevPos = { offsetX: 0, offsetY: 0 };
 
 	useEffect(() => {
-		console.log('useeffect');
 		if (canvas) {
 			// Here we set up the properties of the canvas element. 
 			canvas.width = 500;
 			canvas.height = 500;
 			ctx = canvas.getContext('2d');
 			if (ctx) {
-				console.log('canvas: ', canvas);
-				console.log('ctx: ', ctx);
-				ctx.fillStyle = 'yellow';
+				ctx.fillStyle = 'white';
 				ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 				ctx.lineJoin = 'round';
@@ -33,7 +29,18 @@ export const Canvas = () => {
 				ctx.lineWidth = 5;
 			}
 		}
-	  });
+	  }, []);
+
+	useEffect(() => {
+		if (canvas) {
+			ctx = canvas.getContext('2d');
+			if (ctx) {
+				ctx.lineJoin = 'round';
+				ctx.lineCap = 'round';
+				ctx.lineWidth = 5;
+			}
+		}
+	  }, [myStrokeStyle, myLineWidth]);
 
 	let onMouseDown = ({nativeEvent}: React.MouseEvent<Element, MouseEvent>) => {
 		prevPos = { offsetX: nativeEvent.offsetX, offsetY: nativeEvent.offsetY };
@@ -51,9 +58,6 @@ export const Canvas = () => {
 				start: { ...prevPos },
 				stop: { ...offsetData },
 			};
-			// Add the position to the line array
-			// line = line.concat(positionData);
-			// line.push(positionData);
 			paint(prevPos, offsetData, myStrokeStyle);
 			prevPos = offsetData;
 		}
@@ -88,7 +92,9 @@ export const Canvas = () => {
 		setMyStrokeStyle(window.getComputedStyle(e.target as Element, null)
 								.getPropertyValue("background-color"));
 		setMyLineWidth(5);
-		// ctx.lineWidth = 5;
+		if (ctx) {
+			ctx.lineWidth = 5;
+		}
 	}
 
 	let eraserFunc = (e: React.MouseEvent<Element, MouseEvent>) => {
@@ -107,7 +113,7 @@ export const Canvas = () => {
 					backgroundColor: myStrokeStyle,
 					borderRadius: '50%',
 				}}></div>
-				<div className="colorOption" style={{backgroundColor: 'white'}} onClick={onColorClick}></div>
+				<div className="colorOption" style={{backgroundColor: 'black'}} onClick={onColorClick}></div>
 				<div className="colorOption" style={{backgroundColor: 'red'}} onClick={onColorClick}></div>
 				<div className="colorOption" style={{backgroundColor: 'green'}} onClick={onColorClick}></div>
 				<div className="colorOption" style={{backgroundColor: 'yellow'}} onClick={onColorClick}></div>
