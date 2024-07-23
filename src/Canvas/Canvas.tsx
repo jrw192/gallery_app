@@ -8,11 +8,6 @@ export const Canvas = () => {
 
 	const [myStrokeStyle, setMyStrokeStyle] = useState('');
   	const [myLineWidth, setMyLineWidth] = useState(0);
-  	const [userData, setUserData] = useState({
-  		username: '',
-  		password: '',
-  	});
-
 
 	let isPainting: boolean = false;
 	let prevPos = { offsetX: 0, offsetY: 0 };
@@ -124,31 +119,13 @@ export const Canvas = () => {
 		}
 	}
 
-	let handleUserLogin = (e: ChangeEvent<HTMLInputElement>) => {
-		console.log(e);
-		const { name, value } = e.target;
-		console.log(name, value);
-		setUserData(data => ({
-	      ...data,
-	      [name]: value
-	    }));
-	}
-
 
 	return(
 		<div className='body'>
-			<input placeholder={'Username'}
-					required={true}
-					name='username'
-					value={userData.username}
-					onChange={handleUserLogin}></input>
-			<input placeholder={'Password'}
-					required={true}
-					name='password'
-					value={userData.password}
-					onChange={handleUserLogin}></input>
 			<button onClick={() => clear()}>Start over</button>
-			<button onClick={() => save()}>Save</button>
+			<button onClick={() => save()}
+					// disabled={!loggedIn}
+					>Save</button>
 			<div className='palette'>
 				<div style={{
 					backgroundColor: myStrokeStyle,
