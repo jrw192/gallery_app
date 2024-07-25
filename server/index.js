@@ -2,7 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 
-const galleryModel = require('./galleryModel');
+const galleryService = require('./gallery_service');
+const s3Service = require('./s3_service.ts');
 
 app.use(express.json())
 app.use(function (req, res, next) {
@@ -12,8 +13,10 @@ app.use(function (req, res, next) {
   next();
 });
 
+
+// user api
 app.get('/', (req, res) => {
-  galleryModel.getUsers()
+  galleryService.getUsers()
   .then((response) => {
     res.status(200).send(response);
   })
@@ -23,7 +26,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/names', (req, res) => {
-  galleryModel.getUserNames()
+  galleryService.getUserNames()
   .then((response) => {
     res.status(200).send(response);
   })
@@ -34,7 +37,7 @@ app.get('/names', (req, res) => {
 
 app.get('/user/:id', (req, res) => {
   const id = req.params.id;
-  galleryModel.getUserByName(id)
+  galleryService.getUserByName(id)
   .then((response) => {
     res.status(200).send(response);
   })
@@ -44,7 +47,7 @@ app.get('/user/:id', (req, res) => {
 })
 
 app.post('/users', (req, res) => {
-  galleryModel.createUser(req.body)
+  galleryService.createUser(req.body)
   .then((response) => {
     res.status(200).send(response);
   })
@@ -52,5 +55,19 @@ app.post('/users', (req, res) => {
     res.status(500).send(err);
   })
 })
+
+
+// image api
+app.get('/images', async (req, res) => {
+  s3Service.getAllImages()
+  .then((response) => {
+    console.log('response: ', response);
+    res.status(200).send(response);
+  })
+  .catch((err) => {
+    console.log('err: ', err);
+    res.status(500).send(err);
+  })
+});
 
 app.listen(5000, () => console.log('Server running on port 5000'));
