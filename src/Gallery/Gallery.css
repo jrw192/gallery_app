@@ -1,0 +1,10 @@
+.image-grid {
+    display: flex;
+}
+
+.image {
+    border: 1px solid black;
+    display: inline-flex;
+    height: 200px;
+    margin: 2%;
+}

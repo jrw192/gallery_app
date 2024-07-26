@@ -3,12 +3,12 @@ import { useState, useEffect, ChangeEvent } from 'react';
 import './Login.css';
 
 export const Login = () => {
-	const [userData, setUserData] = useState<{username: string, password: string}>({
+	const [userData, setUserData] = useState<{ username: string, password: string }>({
 		username: '',
 		password: '',
 	});
 
-  const [loggedIn, setLoggedIn] = useState(false);
+	const [loggedIn, setLoggedIn] = useState(false);
 
 	const id = 'jod';
 	const [names, setNames] = useState<string[]>([]);
@@ -21,20 +21,20 @@ export const Login = () => {
 
 	let validateUser = () => {
 		fetch(`http://localhost:5000/user/${userData.username}`)
-      .then(response => {
-      	return response.json();
-      })
-      .then(data => {
-        if (userData.password == data[0].password) {
-        	console.log('passwords match');
-        	setLoggedIn(true);
-        } else {
-        	console.log('incorrect password');
-        	setLoggedIn(false);
-        }
+			.then(response => {
+				return response.json();
+			})
+			.then(data => {
+				if (userData.password == data[0].password) {
+					console.log('passwords match');
+					setLoggedIn(true);
+				} else {
+					console.log('incorrect password');
+					setLoggedIn(false);
+				}
 
-      })
-      .catch(error => console.error('Error:', error));
+			})
+			.catch(error => console.error('Error:', error));
 	}
 
 	let handleUserLogin = () => {
@@ -52,59 +52,58 @@ export const Login = () => {
 	}
 
 	let createUser = () => {
-		fetch(`http://localhost:5000/users`, {
+		fetch('http://localhost:5000/users', {
 			method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(userData),
 		})
-      .then(response => {
-      	// console.log('response: ', response);
-        setLoggedIn(true);
-      	return response.json();
-      })
-      .then(data => {
-      	// console.log(data);
-      })
-      .catch(error => console.error('Error:', error));
+			.then(response => {
+				setLoggedIn(true);
+				return response.json();
+			})
+			.then(data => {
+				return data;
+			})
+			.catch(error => console.error('Error:', error));
 	}
 
 	let formModelChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setUserData(data => ({
-	      ...data,
-	      [name]: value
-	    }));
+			...data,
+			[name]: value
+		}));
 	}
 
 	let getUserNames = () => {
 		fetch('http://localhost:5000/names')
 			.then(response => {
-	      	return response.json();
-	      })
-	      .then(data => {
-	        data = data.map((nameObj: {username: string}) => {
-	        	return nameObj.username;
-	        });
-	        setNames(data);
-	      })
-	      .catch(error => console.error('Error:', error));
+				return response.json();
+			})
+			.then(data => {
+				data = data.map((nameObj: { username: string }) => {
+					return nameObj.username;
+				});
+				setNames(data);
+			})
+			.catch(error => console.error('Error:', error));
 	}
 
 
-	return(
+	return (
 		<div className='login-body'>
 			<input placeholder={'Username'}
-					required={true}
-					name='username'
-					value={userData.username}
-					onChange={formModelChange}></input>
+				required={true}
+				name='username'
+				value={userData.username}
+				onChange={formModelChange}></input>
 			<input placeholder={'Password'}
-					required={true}
-					name='password'
-					value={userData.password}
-					onChange={formModelChange}></input>
+				required={true}
+				name='password'
+				value={userData.password}
+				onChange={formModelChange}></input>
 			<button onClick={() => handleUserLogin()}>Login</button>
 		</div>
 	)

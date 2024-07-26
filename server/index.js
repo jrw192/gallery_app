@@ -2,10 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 
-const galleryService = require('./gallery_service');
+const userService = require('./user_service.js');
 const s3Service = require('./s3_service.ts');
 
-app.use(express.json())
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb', extended: true}));
+app.use(express.raw({ type: 'application/octet-stream', limit: '10mb' }));
 app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST');
@@ -16,7 +18,7 @@ app.use(function (req, res, next) {
 
 // user api
 app.get('/', (req, res) => {
-  galleryService.getUsers()
+  userService.getUsers()
   .then((response) => {
     res.status(200).send(response);
   })
@@ -26,7 +28,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/names', (req, res) => {
-  galleryService.getUserNames()
+  userService.getUserNames()
   .then((response) => {
     res.status(200).send(response);
   })
@@ -37,7 +39,7 @@ app.get('/names', (req, res) => {
 
 app.get('/user/:id', (req, res) => {
   const id = req.params.id;
-  galleryService.getUserByName(id)
+  userService.getUserByName(id)
   .then((response) => {
     res.status(200).send(response);
   })
@@ -47,7 +49,7 @@ app.get('/user/:id', (req, res) => {
 })
 
 app.post('/users', (req, res) => {
-  galleryService.createUser(req.body)
+  userService.createUser(req.body)
   .then((response) => {
     res.status(200).send(response);
   })
@@ -61,11 +63,20 @@ app.post('/users', (req, res) => {
 app.get('/images', async (req, res) => {
   s3Service.getAllImages()
   .then((response) => {
-    console.log('response: ', response);
     res.status(200).send(response);
   })
   .catch((err) => {
-    console.log('err: ', err);
+    res.status(500).send(err);
+  })
+});
+
+app.post('/saveimage/:id', (req, res) => {
+  const id = req.params.id;
+  s3Service.saveImage(id, req.body)
+  .then((response) => {
+    res.status(200).send(response);
+  })
+  .catch((err) => {
     res.status(500).send(err);
   })
 });

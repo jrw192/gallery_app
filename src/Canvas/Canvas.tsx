@@ -1,13 +1,14 @@
 import React from 'react';
 import { useState, useEffect, ChangeEvent } from 'react';
+import {Buffer} from 'buffer';
 import './Canvas.css';
 
 export const Canvas = () => {
-	let canvas: HTMLCanvasElement|null;
-	let ctx: CanvasRenderingContext2D|null;
+	let canvas: HTMLCanvasElement | null;
+	let ctx: CanvasRenderingContext2D | null;
 
 	const [myStrokeStyle, setMyStrokeStyle] = useState('');
-  	const [myLineWidth, setMyLineWidth] = useState(0);
+	const [myLineWidth, setMyLineWidth] = useState(0);
 
 	let isPainting: boolean = false;
 	let prevPos = { offsetX: 0, offsetY: 0 };
@@ -15,7 +16,7 @@ export const Canvas = () => {
 	useEffect(() => {
 		if (canvas) {
 			// Here we set up the properties of the canvas element. 
-			canvas.width = 500;
+			canvas.width = 700;
 			canvas.height = 500;
 			ctx = canvas.getContext('2d');
 			if (ctx) {
@@ -26,7 +27,7 @@ export const Canvas = () => {
 				ctx.lineWidth = 5;
 			}
 		}
-	  }, []);
+	}, []);
 
 	useEffect(() => {
 		if (canvas) {
@@ -37,12 +38,12 @@ export const Canvas = () => {
 				ctx.lineWidth = 5;
 			}
 		}
-	  }, [myStrokeStyle, myLineWidth]);
+	}, [myStrokeStyle, myLineWidth]);
 
-	let startPainting = ({nativeEvent}: React.MouseEvent<Element, MouseEvent>) => {
+	let startPainting = ({ nativeEvent }: React.MouseEvent<Element, MouseEvent>) => {
 		prevPos = { offsetX: nativeEvent.offsetX, offsetY: nativeEvent.offsetY };
 		isPainting = true;
-		
+
 		const offSetData = { offsetX: nativeEvent.offsetX, offsetY: nativeEvent.offsetY };
 		paint(prevPos, offSetData, myStrokeStyle);
 	}
@@ -60,9 +61,9 @@ export const Canvas = () => {
 		}
 	}
 
-	let paint = (prevPos: {offsetX: number, offsetY: number},
-				currPos: {offsetX: number, offsetY: number}, 
-				strokeStyle: any) => {
+	let paint = (prevPos: { offsetX: number, offsetY: number },
+		currPos: { offsetX: number, offsetY: number },
+		strokeStyle: any) => {
 		const { offsetX, offsetY } = currPos;
 		const { offsetX: x, offsetY: y } = prevPos;
 
@@ -87,7 +88,7 @@ export const Canvas = () => {
 
 	let setColor = (e: React.MouseEvent<Element, MouseEvent>) => {
 		setMyStrokeStyle(window.getComputedStyle(e.target as Element, null)
-								.getPropertyValue('background-color'));
+			.getPropertyValue('background-color'));
 		setMyLineWidth(5);
 		if (ctx) {
 			ctx.lineWidth = 5;
@@ -109,43 +110,90 @@ export const Canvas = () => {
 		}
 	}
 
-	let save = () => {
+	let saveImage = async () => {
+		console.log('saveImage');
 		if (canvas) {
-			const dataURL = canvas.toDataURL();
-			let link = document.createElement('a');
-			link.setAttribute('href', dataURL);
-			link.setAttribute('download', 'eeeee' + '.png');
-			link.click();
+			let title = (document!.getElementById('titleInput') as HTMLInputElement).value;
+			console.log('title:',title);
+			const blob = await new Promise<Blob>((resolve) => {
+				canvas!.toBlob((blob) => {
+					resolve(blob!);
+				}, 'image/png');
+			});
+			const file = new File([blob], title, { type: 'image/png' });
+
+			// // Create FormData and append the file
+			// const formData = new FormData();
+			// formData.append('file', file);
+
+			const buffer = await blob.arrayBuffer();
+
+
+			fetch(`http://localhost:5000/saveimage/${title}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/octet-stream',
+				},
+				body: buffer,
+			})
+				.then(response => {
+					return response;
+				})
+				.then(data => {
+					console.log('data: ', data);
+					return data;
+				})
+				.catch(error => console.error('Error:', error));
 		}
 	}
 
+	const convertCanvasToFile = (canvas: HTMLCanvasElement): Promise<Blob> => {
+		return new Promise((resolve) => {
+			canvas.toBlob((blob: any) => {
+				const file = new File([blob!], 'canvas-image.png', { type: 'image/png' });
+				resolve(file);
+			}, 'image/png');
+		});
+	};
 
-	return(
+
+	function dataURItoBlob(dataURI: any): Blob {
+		var binary = atob(dataURI.split(',')[1]);
+		var array = [];
+		for (let i = 0; i < binary.length; i++) {
+			array.push(binary.charCodeAt(i));
+		}
+		return new Blob([new Uint8Array(array)], { type: 'image/jpeg' });
+	}
+
+
+	return (
 		<div className='body'>
+			<input id="titleInput" placeholder={'untitled'} />
 			<button onClick={() => clear()}>Start over</button>
-			<button onClick={() => save()}
-					// disabled={!loggedIn}
-					>Save</button>
+			<button onClick={() => saveImage()}
+			// disabled={!loggedIn}
+			>Save</button>
 			<div className='palette'>
 				<div style={{
 					backgroundColor: myStrokeStyle,
 					borderRadius: '50%',
 				}}></div>
-				<div className='colorOption' style={{backgroundColor: 'black'}} onClick={setColor}></div>
-				<div className='colorOption' style={{backgroundColor: 'red'}} onClick={setColor}></div>
-				<div className='colorOption' style={{backgroundColor: 'green'}} onClick={setColor}></div>
-				<div className='colorOption' style={{backgroundColor: 'yellow'}} onClick={setColor}></div>
-				<div className='colorOption' style={{backgroundColor: 'blue'}} onClick={setColor}></div>
-				<div className='colorOption' style={{backgroundColor: 'pink'}} onClick={setColor}></div>
+				<div className='colorOption' style={{ backgroundColor: 'black' }} onClick={setColor}></div>
+				<div className='colorOption' style={{ backgroundColor: 'red' }} onClick={setColor}></div>
+				<div className='colorOption' style={{ backgroundColor: 'green' }} onClick={setColor}></div>
+				<div className='colorOption' style={{ backgroundColor: 'yellow' }} onClick={setColor}></div>
+				<div className='colorOption' style={{ backgroundColor: 'blue' }} onClick={setColor}></div>
+				<div className='colorOption' style={{ backgroundColor: 'pink' }} onClick={setColor}></div>
 				{/*<img src={EraserIcon} style={{height: '20px', width: '20px', border: '1px solid black'}}
 					onClick={eraserFunc}></img>*/}
-				<div style={{height: '20px', width: '20px', border: '1px solid black'}} onClick={erase}>E</div>
+				<div style={{ height: '20px', width: '20px', border: '1px solid black' }} onClick={erase}>E</div>
 			</div>
 			<div>
 				<canvas className='canvas'
 					// We use the ref attribute to get direct access to the canvas element. 
 					ref={(ref) => (canvas = ref)}
-					style={{position: 'absolute', display: 'inline-block'}}
+					style={{ position: 'absolute', display: 'inline-block' }}
 					onMouseDown={startPainting}
 					onMouseLeave={stopPainting}
 					onMouseUp={stopPainting}
