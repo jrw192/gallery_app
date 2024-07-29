@@ -13,6 +13,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const pgSession = require('connect-pg-simple')(session);
+const bcrypt = require('bcrypt');
 
 const pool = new Pool({
   user: process.env.REACT_APP_DB_USER,
@@ -56,7 +57,8 @@ passport.use(new LocalStrategy(
   function (username, password, done) {
     console.log('authenticating');
     return userService.getUserByName(username).then((user) => {
-      if (password !== user[0].password) {
+      let hashed = bcrypt.hash(password, 5);
+      if (password !== user.password) {
         console.log('not verified');
         return done(null, false)
       }
@@ -67,8 +69,8 @@ passport.use(new LocalStrategy(
 ));
 
 passport.serializeUser(function (user, done) {
-  console.log('serializing user', user[0]);
-  done(null, user[0].username);
+  console.log('serializing user', user);
+  done(null, user.username);
 });
 
 passport.deserializeUser(function (id, done) {

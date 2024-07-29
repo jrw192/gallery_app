@@ -60,7 +60,7 @@ const getUserByName = async (id) => {
           reject(error);
         }
         if (results && results.rows) {
-          resolve(results.rows);
+          resolve(results.rows[0]);
         } else {
           reject(new Error("No results found"));
         }
@@ -81,7 +81,6 @@ const createUser = (body) => {
       [username, password],
       (error, results) => {
         if (error) {
-          console.log('error: ', error);
           reject(error);
         }
         resolve(results);
