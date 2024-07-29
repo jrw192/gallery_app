@@ -1,11 +1,16 @@
 import React from 'react';
 import { useState, useEffect, ChangeEvent } from 'react';
-import {Buffer} from 'buffer';
+import { useOutletContext } from 'react-router-dom';
 import './Canvas.css';
+
 
 export const Canvas = () => {
 	let canvas: HTMLCanvasElement | null;
 	let ctx: CanvasRenderingContext2D | null;
+	const { sessionData } = useOutletContext<{sessionData: {
+		sid: string;
+		name: string;
+	}}>();
 
 	const [myStrokeStyle, setMyStrokeStyle] = useState('');
 	const [myLineWidth, setMyLineWidth] = useState(0);
@@ -111,10 +116,8 @@ export const Canvas = () => {
 	}
 
 	let saveImage = async () => {
-		console.log('saveImage');
 		if (canvas) {
 			let title = (document!.getElementById('titleInput') as HTMLInputElement).value;
-			console.log('title:',title);
 			const blob = await new Promise<Blob>((resolve) => {
 				canvas!.toBlob((blob) => {
 					resolve(blob!);
