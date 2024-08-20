@@ -13,6 +13,7 @@ export const Canvas = () => {
 
 	const [myStrokeStyle, setMyStrokeStyle] = useState('');
 	const [myLineWidth, setMyLineWidth] = useState(0);
+	const [painted, setPainted] = useState(false);
 
 	let isPainting: boolean = false;
 	let prevPos = { offsetX: 0, offsetY: 0 };
@@ -49,6 +50,7 @@ export const Canvas = () => {
 	}, [myStrokeStyle, myLineWidth]);
 
 	let startPainting = ({ nativeEvent }: React.MouseEvent<Element, MouseEvent>) => {
+		setPainted(true);
 		prevPos = { offsetX: nativeEvent.offsetX, offsetY: nativeEvent.offsetY };
 		isPainting = true;
 
@@ -112,6 +114,7 @@ export const Canvas = () => {
 	}
 
 	let clear = () => {
+		setPainted(false);
 		if (canvas && ctxRef.current) {
 			ctxRef.current.fillStyle = 'white';
 			ctxRef.current.fillRect(0, 0, canvas.width, canvas.height);
@@ -147,16 +150,20 @@ export const Canvas = () => {
 	}
 
 	return (
-		<div className='body'>
-			<form>
+		<div className='canvas-body'>
+			<form className='controls'>
 				<input id="titleInput" placeholder={'untitled'} required />
 				<button onClick={() => clear()}>Start over</button>
 				<button id="save-button" onClick={() => saveImage()}
-					disabled={sessionData.sid.length === 0}
+					disabled={sessionData.name.length === 0 || !painted}
 				>Save</button>
-				{sessionData.sid.length === 0 && <Tooltip
+				{sessionData.name.length === 0 && <Tooltip
 					anchorSelect="#save-button"
 					content="log in to save"
+				/>}
+				{(!painted && sessionData.name.length > 0) && <Tooltip
+					anchorSelect="#save-button"
+					content="paint something before saving"
 				/>}
 			</form>
 			<div className='palette'>

@@ -24,7 +24,6 @@ export const Gallery = () => {
 
 	return (
 		<div className='gallery-body'>
-			gallery
 			<div className='image-grid'>
 		      {images.map((image) => (
 		        <div className="item"  key={image.key}>

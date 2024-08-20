@@ -1,9 +1,12 @@
-.body {
-	width: 50%;
+.canvas-body {
+	margin: 1%;
+}
+
+.controls {
+	margin: 2%;
 }
 
 .palette {
-	display: inline-block;
 	float: left;
 }
 
@@ -22,4 +25,5 @@
 .canvas {
 	display: inline-block;
 	border: 5px solid black;
+	z-index: -1;
 }

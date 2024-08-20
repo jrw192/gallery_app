@@ -1,0 +1,9 @@
+.user-body {
+    flex: 1;
+    width: fit-content;
+}
+
+.loggedin, .login-button {
+    float: right;
+    margin-right: 3%;
+}

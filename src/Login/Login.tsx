@@ -4,11 +4,12 @@ import './Login.css';
 import { SessionData } from '../SessionData';
 
 interface LoginProps {
-	handleSession: (data: SessionData) => void;
+	handleSession: () => void;
+	handleClose: () => void;
 	sessionData: SessionData
 }
 
-export const Login: React.FC<LoginProps> = ({ handleSession, sessionData }) => {
+export const Login: React.FC<LoginProps> = ({ handleSession, handleClose, sessionData }) => {
 	const [userData, setUserData] = useState<{ username: string, password: string }>({
 		username: '',
 		password: '',
@@ -44,7 +45,8 @@ export const Login: React.FC<LoginProps> = ({ handleSession, sessionData }) => {
 				return response.json();
 			})
 			.then(data => {
-				handleSession(data);
+				handleSession();
+				handleClose();
 				return data;
 			})
 			.catch(error => {
@@ -65,18 +67,6 @@ export const Login: React.FC<LoginProps> = ({ handleSession, sessionData }) => {
 			.then(response => {
 				setUpdateNames(!updateNames);
 				return response.json();
-			})
-			.catch(error => console.error('Error:', error));
-	}
-
-	let userLogout = () => {
-		fetch(`http://localhost:5000/logout/${sessionData.sid}`)
-			.then(response => {
-				return response.json();
-			})
-			.then(data => {
-				handleSession({ sid: '', name: '' });
-				return data;
 			})
 			.catch(error => console.error('Error:', error));
 	}
@@ -103,26 +93,28 @@ export const Login: React.FC<LoginProps> = ({ handleSession, sessionData }) => {
 			.catch(error => console.error('Error:', error));
 	}
 
-
-	return (sessionData.name.length === 0 ?
-		<div className='login-body'><div className='loggedout'>
-			<input placeholder={'Username'}
-				required={true}
-				name='username'
-				value={userData.username}
-				onChange={formModelChange}></input>
-			<input placeholder={'Password'}
-				required={true}
-				name='password'
-				value={userData.password}
-				onChange={formModelChange}></input>
-			<button onClick={() => handleUserLogin()}>Login</button>
-		</div></div>
-
-		: <div className='login-body'><div className='loggedin'>
-			welcome back, {sessionData.name}.
-			<button onClick={() => userLogout()}>Logout</button>
-		</div></div>
-
+	return (
+		<div className='login-body'>
+			<div className='close' onClick={() => handleClose()}>X</div>
+			<div className='login-content'>
+				log in to existing account, or create new account if username doesn't exist.
+				<input className='user-input'
+					placeholder={'Username'}
+					required={true}
+					name='username'
+					value={userData.username}
+					onChange={formModelChange}></input>
+				<input className='password-input'
+					placeholder={'Password'}
+					required={true}
+					name='password'
+					value={userData.password}
+					onChange={formModelChange}></input>
+				<button className='login-button'
+					onClick={() => handleUserLogin()}>
+					Login
+				</button>
+			</div>
+		</div>
 	)
 };

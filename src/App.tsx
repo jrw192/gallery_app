@@ -1,9 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import './App.css';
-import { Home } from './Home/Home';
-import { Canvas } from './Canvas/Canvas';
 import { Login } from './Login/Login';
+import { UserInfo } from './UserInfo/UserInfo';
 import { Navigation } from './Navigation/Navigation';
 import { Outlet } from "react-router-dom";
 import { SessionData } from './SessionData';
@@ -14,9 +13,16 @@ const App = () => {
     name: '',
   });
 
+  const [showLogin, setShowLogin] = useState(false);
+
   useEffect(() => {
     setSessionCookieIfExists();
-  }, [])
+
+  }, []);
+
+  useEffect(() => {
+    setShowLogin(false);
+  }, [sessionData])
 
   const setSessionCookieIfExists = () => {
     fetch('http://localhost:5000/session', {
@@ -27,6 +33,7 @@ const App = () => {
         return response.json();
       })
       .then(data => {
+        console.log('data:', data);
         if (data.session.passport) {
           setSessionData({
             sid: data.sessionID,
@@ -43,12 +50,32 @@ const App = () => {
       .catch(error => console.error('Error:', error));
   }
 
+  let userLogout = () => {
+    fetch(`http://localhost:5000/logout/${sessionData.sid}`)
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        setSessionData({
+          sid: data.sessionID,
+          name: ''
+        });
+        return data;
+      })
+      .catch(error => console.error('Error:', error));
+  }
+
+  let showLoginPanel = () => {
+    setShowLogin(true);
+  }
+
   return (
     <div className="App">
-      <Navigation />
-      this is the parent page
-      <Login handleSession={() => setSessionCookieIfExists()}
-        sessionData={sessionData} />
+      <div className='top-bar'>
+        <Navigation />
+        <UserInfo handleSession={() => setSessionCookieIfExists()}
+          sessionData={sessionData} />
+      </div>
       <Outlet context={{ sessionData: sessionData }} />
     </div>
   );

@@ -6,7 +6,6 @@ import {
 } from "react-router-dom";
 import './index.css';
 import App from './App';
-import {Home} from './Home/Home'
 import {Canvas} from './Canvas/Canvas';
 import {Gallery} from './Gallery/Gallery';
 
@@ -15,10 +14,6 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
-      {
-        path: "/home",
-        element: <Home />
-      },
       {
         path: "/paint",
         element: <Canvas />
