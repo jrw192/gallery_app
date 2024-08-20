@@ -1,14 +1,14 @@
 .image-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, 300px);
+    grid-template-columns: repeat(auto-fit, 375px);
 }
 
 .item {
-    margin: 2%;
+    margin: 10% 2%;
 }
 
 .image {
     border: 1px solid black;
-    height: 200px;
+    height: 250px;
     width: fit-content;
 }

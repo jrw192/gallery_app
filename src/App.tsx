@@ -1,7 +1,5 @@
-import React from "react";
 import { useState, useEffect } from "react";
 import './App.css';
-import { Login } from './Login/Login';
 import { UserInfo } from './UserInfo/UserInfo';
 import { Navigation } from './Navigation/Navigation';
 import { Outlet } from "react-router-dom";

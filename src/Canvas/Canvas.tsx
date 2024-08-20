@@ -7,13 +7,14 @@ import { SessionData } from '../SessionData';
 
 
 export const Canvas = () => {
+	const colorOptions = ['black', 'brown', 'red', 'orange', 'yellow',
+		'green', 'blue', 'purple', 'pink', 'lightgreen', 'lightblue', 'peachpuff'];
 	let canvas: HTMLCanvasElement | null;
 	const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 	const { sessionData } = useOutletContext<{ sessionData: SessionData }>();
 
-	const [myStrokeStyle, setMyStrokeStyle] = useState('');
-	const [myLineWidth, setMyLineWidth] = useState(0);
-	const [painted, setPainted] = useState(false);
+	const [brushColor, setBrushColor] = useState('');
+	const [brushSize, setBrushSize] = useState(5);
 
 	let isPainting: boolean = false;
 	let prevPos = { offsetX: 0, offsetY: 0 };
@@ -44,18 +45,18 @@ export const Canvas = () => {
 			if (ctxRef.current) {
 				ctxRef.current.lineJoin = 'round';
 				ctxRef.current.lineCap = 'round';
-				ctxRef.current.lineWidth = 5;
+				ctxRef.current.lineWidth = brushSize;
 			}
 		}
-	}, [myStrokeStyle, myLineWidth]);
+	}, [brushColor, brushSize]);
 
 	let startPainting = ({ nativeEvent }: React.MouseEvent<Element, MouseEvent>) => {
-		setPainted(true);
 		prevPos = { offsetX: nativeEvent.offsetX, offsetY: nativeEvent.offsetY };
 		isPainting = true;
+		console.log('brushSize:', brushSize);
 
 		const offSetData = { offsetX: nativeEvent.offsetX, offsetY: nativeEvent.offsetY };
-		paint(prevPos, offSetData, myStrokeStyle);
+		paint(prevPos, offSetData, brushColor);
 	}
 
 	let createLine = ({ nativeEvent }: React.MouseEvent<Element, MouseEvent>) => {
@@ -66,7 +67,7 @@ export const Canvas = () => {
 				start: { ...prevPos },
 				stop: { ...offsetData },
 			};
-			paint(prevPos, offsetData, myStrokeStyle);
+			paint(prevPos, offsetData, brushColor);
 			prevPos = offsetData;
 		}
 	}
@@ -97,24 +98,21 @@ export const Canvas = () => {
 	}
 
 	let setColor = (e: React.MouseEvent<Element, MouseEvent>) => {
-		setMyStrokeStyle(window.getComputedStyle(e.target as Element, null)
+		setBrushColor(window.getComputedStyle(e.target as Element, null)
 			.getPropertyValue('background-color'));
-		setMyLineWidth(5);
 		if (ctxRef.current) {
 			ctxRef.current.lineWidth = 5;
 		}
 	}
 
 	let erase = (e: React.MouseEvent<Element, MouseEvent>) => {
-		setMyStrokeStyle('white');
-		setMyLineWidth(20);
+		setBrushColor('white');
 		if (ctxRef.current) {
 			ctxRef.current.lineWidth = 20;
 		}
 	}
 
 	let clear = () => {
-		setPainted(false);
 		if (canvas && ctxRef.current) {
 			ctxRef.current.fillStyle = 'white';
 			ctxRef.current.fillRect(0, 0, canvas.width, canvas.height);
@@ -149,37 +147,44 @@ export const Canvas = () => {
 		}
 	}
 
+	let handleBrushSize = (e: any) => {
+		console.log('e', e.target.value);
+		setBrushSize(e.target.value);
+	}
+
 	return (
 		<div className='canvas-body'>
 			<form className='controls'>
 				<input id="titleInput" placeholder={'untitled'} required />
 				<button onClick={() => clear()}>Start over</button>
 				<button id="save-button" onClick={() => saveImage()}
-					disabled={sessionData.name.length === 0 || !painted}
+					disabled={sessionData.name.length === 0}
 				>Save</button>
 				{sessionData.name.length === 0 && <Tooltip
 					anchorSelect="#save-button"
 					content="log in to save"
 				/>}
-				{(!painted && sessionData.name.length > 0) && <Tooltip
-					anchorSelect="#save-button"
-					content="paint something before saving"
-				/>}
 			</form>
+			<div className='brush-section'>
+				<input className='range' type='range'
+					value={brushSize}
+					onChange={handleBrushSize}
+					min='1' max='50'>
+				</input>
+				<span className='dot' style={{
+					height: `${brushSize}px`,
+					width: `${brushSize}px`,
+				}}></span>
+				<span>brush size</span>
+			</div>
 			<div className='palette'>
 				<div style={{
-					backgroundColor: myStrokeStyle,
+					backgroundColor: brushColor,
 					borderRadius: '50%',
 				}}></div>
-				<div className='colorOption' style={{ backgroundColor: 'black' }} onClick={setColor}></div>
-				<div className='colorOption' style={{ backgroundColor: 'red' }} onClick={setColor}></div>
-				<div className='colorOption' style={{ backgroundColor: 'green' }} onClick={setColor}></div>
-				<div className='colorOption' style={{ backgroundColor: 'yellow' }} onClick={setColor}></div>
-				<div className='colorOption' style={{ backgroundColor: 'blue' }} onClick={setColor}></div>
-				<div className='colorOption' style={{ backgroundColor: 'pink' }} onClick={setColor}></div>
-				{/*<img src={EraserIcon} style={{height: '20px', width: '20px', border: '1px solid black'}}
-					onClick={eraserFunc}></img>*/}
-				<div style={{ height: '20px', width: '20px', border: '1px solid black' }} onClick={erase}>E</div>
+				{colorOptions.map((c) => <div className='colorOption' style={{ backgroundColor: c }} onClick={setColor}></div>)}
+				<div style={{ height: '20px', width: '20px', border: '1px solid black' }}
+					onClick={erase}>E</div>
 			</div>
 			<div>
 				<canvas className='canvas'
@@ -192,6 +197,6 @@ export const Canvas = () => {
 					onMouseMove={createLine}
 				/>
 			</div>
-		</div>
+		</div >
 	)
 };

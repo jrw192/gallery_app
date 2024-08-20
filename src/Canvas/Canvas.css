@@ -23,7 +23,15 @@
 }
 
 .canvas {
-	display: inline-block;
+    aspect-ratio: auto 700 / 500;
 	border: 5px solid black;
+	display: inline-block;
 	z-index: -1;
 }
+
+.dot {
+	background-color: black;
+	border-radius: 50%;
+	display: inline-block;
+	margin:5px;
+  }

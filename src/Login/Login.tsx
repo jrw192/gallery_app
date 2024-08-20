@@ -105,6 +105,7 @@ export const Login: React.FC<LoginProps> = ({ handleSession, handleClose, sessio
 					value={userData.username}
 					onChange={formModelChange}></input>
 				<input className='password-input'
+					type='password'
 					placeholder={'Password'}
 					required={true}
 					name='password'
