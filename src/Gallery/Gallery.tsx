@@ -27,8 +27,8 @@ export const Gallery = () => {
 			gallery
 			<div className='image-grid'>
 		      {images.map((image) => (
-		        <div className="item">
-					<img className='image' key={image.key} src={image.url}/>
+		        <div className="item"  key={image.key}>
+					<img className='image' src={image.url}/>
 					<div className="title">{image.key}</div>
 				</div>
 		      ))}	
