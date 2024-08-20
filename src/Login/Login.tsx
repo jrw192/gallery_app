@@ -1,37 +1,40 @@
 import React from 'react';
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useMemo, useEffect, ChangeEvent } from 'react';
 import './Login.css';
+import { SessionData } from '../SessionData';
 
 interface LoginProps {
-	handleSession: (data: {sid: string, userName: string}) => void;
-	name: string;
-	sid: string;
+	handleSession: (data: SessionData) => void;
+	sessionData: SessionData
 }
 
-export const Login: React.FC<LoginProps> = ({ handleSession, name, sid }) => {
+export const Login: React.FC<LoginProps> = ({ handleSession, sessionData }) => {
 	const [userData, setUserData] = useState<{ username: string, password: string }>({
 		username: '',
 		password: '',
 	});
-
-	const id = 'jod';
+	const [updateNames, setUpdateNames] = useState(false);
 	const [names, setNames] = useState<string[]>([]);
 
 	useEffect(() => {
-		getUserNames();
-	}, []);
+		getUserNames().then(n => setNames(n));
+	}, [updateNames]);
 
 	let handleUserLogin = () => {
 		if (!names.includes(userData.username)) {
-			createUser();
+			createUser().then(() => {
+				loginUser();
+			});
+		} else {
+			loginUser();
 		}
-		loginUser();
 	}
 
 	let loginUser = () => {
-		console.log('loginuser');
+		console.log('login');
 		fetch('http://localhost:5000/login', {
 			method: 'POST',
+			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
 			},
@@ -47,11 +50,12 @@ export const Login: React.FC<LoginProps> = ({ handleSession, name, sid }) => {
 			.catch(error => {
 				alert('incorrect password');
 				return console.error('Error:', error);
-	});
+			});
 	}
 
 	let createUser = () => {
-		fetch('http://localhost:5000/createuser', {
+		console.log('create user');
+		return fetch('http://localhost:5000/createuser', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -59,22 +63,19 @@ export const Login: React.FC<LoginProps> = ({ handleSession, name, sid }) => {
 			body: JSON.stringify(userData),
 		})
 			.then(response => {
-				console.log('response: ',response);
+				setUpdateNames(!updateNames);
 				return response.json();
-			})
-			.then(data => {
-				return data;
 			})
 			.catch(error => console.error('Error:', error));
 	}
 
 	let userLogout = () => {
-		fetch(`http://localhost:5000/logout/${sid}`)
+		fetch(`http://localhost:5000/logout/${sessionData.sid}`)
 			.then(response => {
 				return response.json();
 			})
 			.then(data => {
-				handleSession({sid: '', userName: ''});
+				handleSession({ sid: '', name: '' });
 				return data;
 			})
 			.catch(error => console.error('Error:', error));
@@ -89,7 +90,7 @@ export const Login: React.FC<LoginProps> = ({ handleSession, name, sid }) => {
 	}
 
 	let getUserNames = () => {
-		fetch('http://localhost:5000/names')
+		return fetch('http://localhost:5000/names')
 			.then(response => {
 				return response.json();
 			})
@@ -97,13 +98,13 @@ export const Login: React.FC<LoginProps> = ({ handleSession, name, sid }) => {
 				data = data.map((nameObj: { username: string }) => {
 					return nameObj.username;
 				});
-				setNames(data);
+				return data;
 			})
 			.catch(error => console.error('Error:', error));
 	}
 
 
-	return (sid.length == 0 ?
+	return (sessionData.name.length === 0 ?
 		<div className='login-body'><div className='loggedout'>
 			<input placeholder={'Username'}
 				required={true}
@@ -119,7 +120,7 @@ export const Login: React.FC<LoginProps> = ({ handleSession, name, sid }) => {
 		</div></div>
 
 		: <div className='login-body'><div className='loggedin'>
-			welcome back, {name}.
+			welcome back, {sessionData.name}.
 			<button onClick={() => userLogout()}>Logout</button>
 		</div></div>
 

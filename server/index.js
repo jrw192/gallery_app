@@ -1,12 +1,13 @@
 const express = require('express');
 const app = express();
 const session = require('express-session');
+const cookieSession = require('cookie-session')
 
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
 const userService = require('./user_service.js');
-const s3Service = require('./s3_service.ts');
+const s3Service = require('./s3_service.js');
 
 const { Pool } = require('pg');
 const path = require('path');
@@ -23,42 +24,44 @@ const pool = new Pool({
   port: process.env.REACT_APP_DB_PORT,
 });
 
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.raw({ type: 'application/octet-stream', limit: '10mb' }));
 app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST','PUT');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers');
+  res.setHeader('Access-Control-Allow-Credentials', true);
   next();
 });
-app.use(require('cookie-parser')());
+// app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
 
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: 'secret',
-  resave: false,
+  resave: true,
   saveUninitialized: false,
   cookie: {
     secure: false,
-    maxAge: 3600000 //1 hour
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours,
   },
-  store: new pgSession({ 
-    pool: pool, 
-    tableName: "session", 
-  }), 
+  store: new pgSession({
+    pool: pool,
+    tableName: "user_sessions",
+  }),
 }));
-
-
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+// passport stuff
 passport.use(new LocalStrategy(
   function (username, password, done) {
     console.log('authenticating');
     return userService.getUserByName(username).then((user) => {
-      let hashed = bcrypt.hash(password, 5);
-      if (password !== user.password) {
+      let match = bcrypt.compareSync(password, user.password);
+      if (!match) {
         console.log('not verified');
         return done(null, false)
       }
@@ -69,15 +72,18 @@ passport.use(new LocalStrategy(
 ));
 
 passport.serializeUser(function (user, done) {
-  console.log('serializing user', user);
   done(null, user.username);
 });
 
-passport.deserializeUser(function (id, done) {
-  User.findById(id, function (err, user) {
-    done(err, user[0]);
-  });
+passport.deserializeUser(function (username, done) {
+  userService.getUserByName(username)
+    .then(user => done(null, user))
+    .catch(err => done(err));
 });
+
+
+
+// ----------- API -------------
 
 // user api
 app.get('/', (req, res) => {
@@ -115,7 +121,6 @@ app.get('/user/:id', (req, res) => {
 app.post('/createuser', (req, res) => {
   userService.createUser(req.body)
     .then((response) => {
-      console.log('response:::', response);
       res.status(200).send(response);
     })
     .catch((err) => {
@@ -126,10 +131,14 @@ app.post('/createuser', (req, res) => {
 // account session api
 app.post('/login', passport.authenticate('local', {
   failureRedirect: '/home',
-  failureFlash: true
+  failureFlash: true,
+  keepSessionInfo: true
 }), (req, res) => {
   req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // Cookie expires after 30 days
-  res.status(200).send({sid: req.sessionID, name: req.session.passport.user});
+  req.logIn(req.user, (err) => {
+    if (err) { return next(err); }
+    res.status(200).send({ sid: req.sessionID, name: req.session.passport.user });
+  });
 });
 
 app.get('/logout/:sid', (req, res) => {
@@ -140,26 +149,26 @@ app.get('/logout/:sid', (req, res) => {
     }
     else {
       console.log('deleting session id: ', sessionId);
-      pool.query('DELETE FROM session WHERE sid = $1', [sessionId]).then(() => {
+      pool.query('DELETE FROM user_sessions WHERE sid = $1', [sessionId]).then(() => {
         console.log('successfully logged out');
-        console.log(req.session);
         res.redirect('/');
       })
-      .catch((err) => {
-        console.log('error:',err);
-      });
+        .catch((err) => {
+          console.log('error:', err);
+        });
     }
   });
 });
 
 app.get('/session', (req, res) => {
   if (req.session) {
-    res.status(200).send(req.session);
+    res.status(200).json({
+      sessionID: req.sessionID,
+      session: req.session});
   } else {
     res.status(500).send('No user logged in');
   }
 });
-
 
 // image api
 app.get('/images', async (req, res) => {

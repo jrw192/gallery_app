@@ -1,16 +1,15 @@
 import React from 'react';
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { Tooltip } from 'react-tooltip'
 import './Canvas.css';
+import { SessionData } from '../SessionData';
 
 
 export const Canvas = () => {
 	let canvas: HTMLCanvasElement | null;
-	let ctx: CanvasRenderingContext2D | null;
-	const { sessionData } = useOutletContext<{sessionData: {
-		sid: string;
-		name: string;
-	}}>();
+	const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+	const { sessionData } = useOutletContext<{ sessionData: SessionData }>();
 
 	const [myStrokeStyle, setMyStrokeStyle] = useState('');
 	const [myLineWidth, setMyLineWidth] = useState(0);
@@ -19,28 +18,32 @@ export const Canvas = () => {
 	let prevPos = { offsetX: 0, offsetY: 0 };
 
 	useEffect(() => {
+		console.log('sessionData:', sessionData);
+	}, [sessionData]);
+
+	useEffect(() => {
 		if (canvas) {
 			// Here we set up the properties of the canvas element. 
 			canvas.width = 700;
 			canvas.height = 500;
-			ctx = canvas.getContext('2d');
-			if (ctx) {
+			ctxRef.current = canvas.getContext('2d');
+			if (ctxRef.current) {
 				clear();
 
-				ctx.lineJoin = 'round';
-				ctx.lineCap = 'round';
-				ctx.lineWidth = 5;
+				ctxRef.current.lineJoin = 'round';
+				ctxRef.current.lineCap = 'round';
+				ctxRef.current.lineWidth = 5;
 			}
 		}
 	}, []);
 
 	useEffect(() => {
+		// set canvas ctx line properties when strokestyle or linewidth changes
 		if (canvas) {
-			ctx = canvas.getContext('2d');
-			if (ctx) {
-				ctx.lineJoin = 'round';
-				ctx.lineCap = 'round';
-				ctx.lineWidth = 5;
+			if (ctxRef.current) {
+				ctxRef.current.lineJoin = 'round';
+				ctxRef.current.lineCap = 'round';
+				ctxRef.current.lineWidth = 5;
 			}
 		}
 	}, [myStrokeStyle, myLineWidth]);
@@ -72,15 +75,15 @@ export const Canvas = () => {
 		const { offsetX, offsetY } = currPos;
 		const { offsetX: x, offsetY: y } = prevPos;
 
-		if (ctx) {
-			ctx.beginPath();
-			ctx.strokeStyle = strokeStyle;
+		if (ctxRef.current) {
+			ctxRef.current.beginPath();
+			ctxRef.current.strokeStyle = strokeStyle;
 			// Move the the prevPosition of the mouse
-			ctx.moveTo(x, y);
+			ctxRef.current.moveTo(x, y);
 			// Draw a line to the current position of the mouse
-			ctx.lineTo(offsetX, offsetY);
+			ctxRef.current.lineTo(offsetX, offsetY);
 			// Visualize the line using the strokeStyle
-			ctx.stroke();
+			ctxRef.current.stroke();
 			prevPos = { offsetX, offsetY };
 		}
 	}
@@ -95,40 +98,34 @@ export const Canvas = () => {
 		setMyStrokeStyle(window.getComputedStyle(e.target as Element, null)
 			.getPropertyValue('background-color'));
 		setMyLineWidth(5);
-		if (ctx) {
-			ctx.lineWidth = 5;
+		if (ctxRef.current) {
+			ctxRef.current.lineWidth = 5;
 		}
 	}
 
 	let erase = (e: React.MouseEvent<Element, MouseEvent>) => {
 		setMyStrokeStyle('white');
 		setMyLineWidth(20);
-		if (ctx) {
-			ctx.lineWidth = 20;
+		if (ctxRef.current) {
+			ctxRef.current.lineWidth = 20;
 		}
 	}
 
 	let clear = () => {
-		if (canvas && ctx) {
-			ctx.fillStyle = 'white';
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
+		if (canvas && ctxRef.current) {
+			ctxRef.current.fillStyle = 'white';
+			ctxRef.current.fillRect(0, 0, canvas.width, canvas.height);
 		}
 	}
 
 	let saveImage = async () => {
 		if (canvas) {
-			let title = (document!.getElementById('titleInput') as HTMLInputElement).value;
+			let title = (document!.getElementById('titleInput') as HTMLInputElement).value + ' by ' + sessionData.name;
 			const blob = await new Promise<Blob>((resolve) => {
 				canvas!.toBlob((blob) => {
 					resolve(blob!);
 				}, 'image/png');
 			});
-			const file = new File([blob], title, { type: 'image/png' });
-
-			// // Create FormData and append the file
-			// const formData = new FormData();
-			// formData.append('file', file);
-
 			const buffer = await blob.arrayBuffer();
 
 
@@ -143,40 +140,25 @@ export const Canvas = () => {
 					return response;
 				})
 				.then(data => {
-					console.log('data: ', data);
 					return data;
 				})
 				.catch(error => console.error('Error:', error));
 		}
 	}
 
-	const convertCanvasToFile = (canvas: HTMLCanvasElement): Promise<Blob> => {
-		return new Promise((resolve) => {
-			canvas.toBlob((blob: any) => {
-				const file = new File([blob!], 'canvas-image.png', { type: 'image/png' });
-				resolve(file);
-			}, 'image/png');
-		});
-	};
-
-
-	function dataURItoBlob(dataURI: any): Blob {
-		var binary = atob(dataURI.split(',')[1]);
-		var array = [];
-		for (let i = 0; i < binary.length; i++) {
-			array.push(binary.charCodeAt(i));
-		}
-		return new Blob([new Uint8Array(array)], { type: 'image/jpeg' });
-	}
-
-
 	return (
 		<div className='body'>
-			<input id="titleInput" placeholder={'untitled'} />
-			<button onClick={() => clear()}>Start over</button>
-			<button onClick={() => saveImage()}
-			// disabled={!loggedIn}
-			>Save</button>
+			<form>
+				<input id="titleInput" placeholder={'untitled'} required />
+				<button onClick={() => clear()}>Start over</button>
+				<button id="save-button" onClick={() => saveImage()}
+					disabled={sessionData.sid.length === 0}
+				>Save</button>
+				{sessionData.sid.length === 0 && <Tooltip
+					anchorSelect="#save-button"
+					content="log in to save"
+				/>}
+			</form>
 			<div className='palette'>
 				<div style={{
 					backgroundColor: myStrokeStyle,

@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect } from 'react';
 import './Gallery.css';
 
 export const Gallery = () => {

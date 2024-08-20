@@ -1,6 +1,9 @@
 const { Pool } = require('pg');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const {
+  scryptSync,
+} = require('node:crypto');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const pool = new Pool({
@@ -59,7 +62,7 @@ const getUserByName = async (id) => {
         if (error) {
           reject(error);
         }
-        if (results && results.rows) {
+        if (results && results.rows.length > 0) {
           resolve(results.rows[0]);
         } else {
           reject(new Error("No results found"));
@@ -68,19 +71,21 @@ const getUserByName = async (id) => {
     });
   } catch (error_1) {
     console.error(error_1);
-    throw new Error("Internal server error");
+    // throw new Error("Internal server error");
   }
 }
 
 const createUser = (body) => {
   return new Promise(function (resolve, reject) {
     const { username, password } = body;
-    const hashedPassword = bcrypt.hash(password, 5);
+    const hashedPassword = bcrypt.hashSync(password, 5);
+    console.log('user:', username, ' hashedPassword:', hashedPassword);
     pool.query(
       "INSERT INTO gallery_users VALUES ($1, $2)",
-      [username, password],
+      [username, hashedPassword],
       (error, results) => {
         if (error) {
+          console.log('????');
           reject(error);
         }
         resolve(results);
