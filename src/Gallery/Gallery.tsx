@@ -13,7 +13,7 @@ export const Gallery = () => {
 	}, []);
 
 	let getImages = () => {
-		fetch('http://localhost:5000/images')
+		fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/images`)
 		.then(response => {
 			return response.json();
 		})
@@ -25,7 +25,7 @@ export const Gallery = () => {
 	}
 
 	let getPostcards = () => {
-		fetch('http://localhost:5000/getpostcards')
+		fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/getpostcards`)
 		.then(response => {
 			return response.json();
 		})

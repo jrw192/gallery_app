@@ -130,7 +130,7 @@ export const Canvas = () => {
 			});
 			const buffer = await blob.arrayBuffer();
 
-			fetch(`http://localhost:5000/saveimage/${postcardId}`, {
+			fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/saveimage/${postcardId}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/octet-stream',
@@ -145,7 +145,7 @@ export const Canvas = () => {
 				})
 				.catch(error => console.error('Error:', error));
 
-			fetch(`http://localhost:5000/savepostcard/${postcardId}`, {
+			fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/savepostcard/${postcardId}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

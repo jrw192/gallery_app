@@ -13,11 +13,10 @@ const App = () => {
 
   useEffect(() => {
     setSessionCookieIfExists();
-
   }, []);
 
   const setSessionCookieIfExists = () => {
-    fetch('http://localhost:5000/session', {
+    fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/session`, {
       method: 'GET',
       credentials: 'include'
     })
@@ -42,7 +41,7 @@ const App = () => {
   }
 
   let userLogout = () => {
-    fetch(`http://localhost:5000/logout/${sessionData.sid}`)
+    fetch(`${process.env.SERVER_HOSTNAME}/logout/${sessionData.sid}`)
       .then(response => {
         return response.json();
       })

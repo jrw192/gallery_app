@@ -32,7 +32,7 @@ export const Login: React.FC<LoginProps> = ({ handleSession, handleClose, sessio
 	}
 
 	let loginUser = () => {
-		fetch('http://localhost:5000/login', {
+		fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/login`, {
 			method: 'POST',
 			credentials: 'include',
 			headers: {
@@ -55,7 +55,7 @@ export const Login: React.FC<LoginProps> = ({ handleSession, handleClose, sessio
 	}
 
 	let createUser = () => {
-		return fetch('http://localhost:5000/createuser', {
+		return fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/createuser`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export const Login: React.FC<LoginProps> = ({ handleSession, handleClose, sessio
 	}
 
 	let getUserNames = () => {
-		return fetch('http://localhost:5000/names')
+		return fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/names`)
 			.then(response => {
 				return response.json();
 			})
