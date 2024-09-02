@@ -3,7 +3,7 @@ import './App.css';
 import { UserInfo } from './UserInfo/UserInfo';
 import { Navigation } from './Navigation/Navigation';
 import { Outlet } from "react-router-dom";
-import { SessionData } from './SessionData';
+import { SessionData } from './types';
 
 const App = () => {
   const [sessionData, setSessionData] = useState<SessionData>({
@@ -11,16 +11,10 @@ const App = () => {
     name: '',
   });
 
-  const [showLogin, setShowLogin] = useState(false);
-
   useEffect(() => {
     setSessionCookieIfExists();
 
   }, []);
-
-  useEffect(() => {
-    setShowLogin(false);
-  }, [sessionData])
 
   const setSessionCookieIfExists = () => {
     fetch('http://localhost:5000/session', {
@@ -61,10 +55,6 @@ const App = () => {
         return data;
       })
       .catch(error => console.error('Error:', error));
-  }
-
-  let showLoginPanel = () => {
-    setShowLogin(true);
   }
 
   return (

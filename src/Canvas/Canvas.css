@@ -2,10 +2,6 @@
 	margin: 1%;
 }
 
-.controls {
-	margin: 2%;
-}
-
 .palette {
 	float: left;
 }
@@ -26,7 +22,7 @@
     aspect-ratio: auto 700 / 500;
 	border: 5px solid black;
 	display: inline-block;
-	z-index: -1;
+	/* z-index: -1; */
 }
 
 .dot {
@@ -34,4 +30,21 @@
 	border-radius: 50%;
 	display: inline-block;
 	margin:5px;
-  }
+}
+
+.canvas-wrapper {
+	position: relative;
+}
+
+.details-section {
+	width: fit-content;
+}
+
+.textarea {
+	height: 5em;
+	width: 25em;
+}
+
+.controls {
+	margin: 2%;
+}

@@ -1,9 +1,6 @@
 const { Pool } = require('pg');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const {
-  scryptSync,
-} = require('node:crypto');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const pool = new Pool({
@@ -85,7 +82,6 @@ const createUser = (body) => {
       [username, hashedPassword],
       (error, results) => {
         if (error) {
-          console.log('????');
           reject(error);
         }
         resolve(results);
@@ -97,5 +93,5 @@ module.exports = {
   getUsers,
   getUserNames,
   getUserByName,
-  createUser
+  createUser,
 };

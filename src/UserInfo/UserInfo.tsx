@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import './UserInfo.css';
-import { SessionData } from '../SessionData';
+import { SessionData } from '../types';
 import { Login } from '../Login/Login';
 
 export const UserInfo: React.FC<{handleSession: () => void;

@@ -3,8 +3,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Tooltip } from 'react-tooltip'
 import './Canvas.css';
-import { SessionData } from '../SessionData';
-
+import { SessionData, Postcard } from '../types';
+import { Loader, LoaderOptions } from 'google-maps';
+import { Details} from '../Details/Details';
 
 export const Canvas = () => {
 	const colorOptions = ['black', 'brown', 'red', 'orange', 'yellow',
@@ -119,9 +120,10 @@ export const Canvas = () => {
 		}
 	}
 
-	let saveImage = async () => {
+	let saveData = async (postcardData: Postcard) => {
 		if (canvas) {
-			let title = (document!.getElementById('titleInput') as HTMLInputElement).value + ' by ' + sessionData.name;
+			// let title = (document!.getElementById('titleInput') as HTMLInputElement).value + ' by ' + sessionData.name;
+			let postcardId = crypto.randomUUID();
 			const blob = await new Promise<Blob>((resolve) => {
 				canvas!.toBlob((blob) => {
 					resolve(blob!);
@@ -129,8 +131,7 @@ export const Canvas = () => {
 			});
 			const buffer = await blob.arrayBuffer();
 
-
-			fetch(`http://localhost:5000/saveimage/${title}`, {
+			fetch(`http://localhost:5000/saveimage/${postcardId}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/octet-stream',
@@ -144,7 +145,25 @@ export const Canvas = () => {
 					return data;
 				})
 				.catch(error => console.error('Error:', error));
+
+			console.log(JSON.stringify(postcardData))
+			fetch(`http://localhost:5000/savepostcard/${title}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				  },
+				body: JSON.stringify(postcardData),
+			})
+				.then(response => {
+					return response;
+				})
+				.then(data => {
+					return data;
+				})
+				.catch(error => console.error('Error:', error));
 		}
+
+
 	}
 
 	let handleBrushSize = (e: any) => {
@@ -154,17 +173,7 @@ export const Canvas = () => {
 
 	return (
 		<div className='canvas-body'>
-			<form className='controls'>
-				<input id="titleInput" placeholder={'untitled'} required />
-				<button onClick={() => clear()}>Start over</button>
-				<button id="save-button" onClick={() => saveImage()}
-					disabled={sessionData.name.length === 0}
-				>Save</button>
-				{sessionData.name.length === 0 && <Tooltip
-					anchorSelect="#save-button"
-					content="log in to save"
-				/>}
-			</form>
+			<Details clear={clear} saveData={saveData} />
 			<div className='brush-section'>
 				<input className='range' type='range'
 					value={brushSize}
@@ -186,7 +195,7 @@ export const Canvas = () => {
 				<div style={{ height: '20px', width: '20px', border: '1px solid black' }}
 					onClick={erase}>E</div>
 			</div>
-			<div>
+			<div className='canvas-wrapper'>
 				<canvas className='canvas'
 					// We use the ref attribute to get direct access to the canvas element. 
 					ref={(ref) => (canvas = ref)}

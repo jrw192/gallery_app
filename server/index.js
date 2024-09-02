@@ -1,13 +1,14 @@
 const express = require('express');
 const app = express();
 const session = require('express-session');
-const cookieSession = require('cookie-session')
 
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
 const userService = require('./user_service.js');
 const s3Service = require('./s3_service.js');
+const postcardService = require('./postcard_service.js');
+const locationService = require('./location_service.js');
 
 const { Pool } = require('pg');
 const path = require('path');
@@ -190,6 +191,39 @@ app.post('/saveimage/:id', (req, res) => {
     .catch((err) => {
       res.status(500).send(err);
     })
+});
+
+// postcard data
+app.post('/savepostcard/:id', (req, res) => {
+  const postcard = req.body;
+  console.log('postcard:',postcard);
+  postcardService.savePostcard(postcard)
+    .then((response) => {
+      res.status(200).send(response);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    })
+})
+
+app.post('/savecity', (req, res) => {
+  const body = req.body;
+  console.log(body);
+  locationService.saveCity(body)
+  .then((response) => {
+    res.status(200).send(response);
+  })
+  .catch(err => res.status(500).send(err));
+});
+
+app.get('/getcities', (req, res) => {
+  locationService.getCities()
+  .then((response) => {
+    res.status(200).send(response);
+  })
+  .catch(err => {
+    res.status(500).send(err);
+  });
 });
 
 app.listen(5000, () => console.log('Server running on port 5000'));

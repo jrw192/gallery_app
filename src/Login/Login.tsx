@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useMemo, useEffect, ChangeEvent } from 'react';
 import './Login.css';
-import { SessionData } from '../SessionData';
+import { SessionData } from '../types';
 
 interface LoginProps {
 	handleSession: () => void;
