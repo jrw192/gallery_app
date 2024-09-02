@@ -31,7 +31,6 @@ export const Gallery = () => {
 		})
 		.then(data => {
 			setPostcards(data);
-			console.log('data:',data);
 			return data;
 		})
 		.catch(error => console.error('Error:', error));
@@ -46,7 +45,6 @@ export const Gallery = () => {
 			title: '',
 			message: '',
 		} as PostcardType;
-		console.log('postcard',postcard);
 		return postcard
 	}
 

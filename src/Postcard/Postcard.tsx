@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './Postcard.css';
 import { Postcard as PostcardType } from '../types';
 
