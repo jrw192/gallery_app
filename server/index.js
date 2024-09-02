@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const session = require('express-session');
 
+const port = process.env.PORT || 4000;
+
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
@@ -92,7 +94,7 @@ app.get('/', (req, res) => {
       res.status(200).send(response);
     })
     .catch((err) => {
-      res.status(500).send(error);
+      res.status(500).send(err);
     })
 });
 
@@ -232,4 +234,4 @@ app.get('/getcities', (req, res) => {
   });
 });
 
-app.listen(5000, () => console.log('Server running on port 5000'));
+app.listen(port, () => console.log(`Server running on port ${port}`));
