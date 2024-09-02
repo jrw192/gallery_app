@@ -29,7 +29,7 @@ const pool = new Pool({
 
 app.use(express.raw({ type: 'application/octet-stream', limit: '10mb' }));
 app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Origin', process.env.REACT_APP_SITE_SOURCE);
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST','PUT');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers');
   res.setHeader('Access-Control-Allow-Credentials', true);
