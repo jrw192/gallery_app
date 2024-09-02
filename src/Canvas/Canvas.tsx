@@ -21,7 +21,7 @@ export const Canvas = () => {
 	let prevPos = { offsetX: 0, offsetY: 0 };
 
 	useEffect(() => {
-		console.log('sessionData:', sessionData);
+		console.log('restoring session');
 	}, [sessionData]);
 
 	useEffect(() => {
@@ -54,7 +54,6 @@ export const Canvas = () => {
 	let startPainting = ({ nativeEvent }: React.MouseEvent<Element, MouseEvent>) => {
 		prevPos = { offsetX: nativeEvent.offsetX, offsetY: nativeEvent.offsetY };
 		isPainting = true;
-		console.log('brushSize:', brushSize);
 
 		const offSetData = { offsetX: nativeEvent.offsetX, offsetY: nativeEvent.offsetY };
 		paint(prevPos, offSetData, brushColor);
@@ -122,8 +121,8 @@ export const Canvas = () => {
 
 	let saveData = async (postcardData: Postcard) => {
 		if (canvas) {
-			// let title = (document!.getElementById('titleInput') as HTMLInputElement).value + ' by ' + sessionData.name;
 			let postcardId = crypto.randomUUID();
+			postcardData.id = postcardId;
 			const blob = await new Promise<Blob>((resolve) => {
 				canvas!.toBlob((blob) => {
 					resolve(blob!);
@@ -146,8 +145,7 @@ export const Canvas = () => {
 				})
 				.catch(error => console.error('Error:', error));
 
-			console.log(JSON.stringify(postcardData))
-			fetch(`http://localhost:5000/savepostcard/${title}`, {
+			fetch(`http://localhost:5000/savepostcard/${postcardId}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -167,7 +165,6 @@ export const Canvas = () => {
 	}
 
 	let handleBrushSize = (e: any) => {
-		console.log('e', e.target.value);
 		setBrushSize(e.target.value);
 	}
 

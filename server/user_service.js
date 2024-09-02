@@ -12,7 +12,6 @@ const pool = new Pool({
 });
 
 const getUsers = async () => {
-  console.log('getUsers');
   try {
     return await new Promise(function (resolve, reject) {
       pool.query("SELECT * FROM gallery_users", (error, results) => {
@@ -76,7 +75,6 @@ const createUser = (body) => {
   return new Promise(function (resolve, reject) {
     const { username, password } = body;
     const hashedPassword = bcrypt.hashSync(password, 5);
-    console.log('user:', username, ' hashedPassword:', hashedPassword);
     pool.query(
       "INSERT INTO gallery_users VALUES ($1, $2)",
       [username, hashedPassword],

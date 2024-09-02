@@ -58,15 +58,15 @@ const getPostcardById = async (id) => {
 const savePostcard = (postcard) => {
     return new Promise(function (resolve, reject) {
         pool.query(
-            "INSERT INTO postcards VALUES ($1, $2, $3, $4, $5)",
+            "INSERT INTO postcards VALUES ($1, $2, $3, $4, $5, $6)",
             [postcard['id'],
             postcard['creator'],
             postcard['location'],
             postcard['date'],
+            postcard['title'],
             postcard['message']],
             (error, results) => {
                 if (error) {
-                    console.log('????', error);
                     reject(error);
                 }
                 resolve(results);

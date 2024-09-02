@@ -59,7 +59,6 @@ app.use(passport.session());
 // passport stuff
 passport.use(new LocalStrategy(
   function (username, password, done) {
-    console.log('authenticating');
     return userService.getUserByName(username).then((user) => {
       let match = bcrypt.compareSync(password, user.password);
       if (!match) {
@@ -149,7 +148,6 @@ app.get('/logout/:sid', (req, res) => {
       res.status(500).send(err);
     }
     else {
-      console.log('deleting session id: ', sessionId);
       pool.query('DELETE FROM user_sessions WHERE sid = $1', [sessionId]).then(() => {
         console.log('successfully logged out');
         res.redirect('/');
@@ -196,7 +194,6 @@ app.post('/saveimage/:id', (req, res) => {
 // postcard data
 app.post('/savepostcard/:id', (req, res) => {
   const postcard = req.body;
-  console.log('postcard:',postcard);
   postcardService.savePostcard(postcard)
     .then((response) => {
       res.status(200).send(response);
@@ -206,9 +203,18 @@ app.post('/savepostcard/:id', (req, res) => {
     })
 })
 
+app.get('/getpostcards', (req, res) => {
+  postcardService.getAllPostcards()
+  .then((response) => {
+    res.status(200).send(response);
+  })
+  .catch(err => {
+    res.status(500).send(err);
+  });
+});
+
 app.post('/savecity', (req, res) => {
   const body = req.body;
-  console.log(body);
   locationService.saveCity(body)
   .then((response) => {
     res.status(200).send(response);

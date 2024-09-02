@@ -2,13 +2,3 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, 375px);
 }
-
-.item {
-    margin: 10% 2%;
-}
-
-.image {
-    border: 1px solid black;
-    height: 250px;
-    width: fit-content;
-}

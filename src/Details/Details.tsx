@@ -13,13 +13,12 @@ export const Details: React.FC<{ clear: () => void, saveData: (postcardData: Pos
         const [location, setLocation] = useState('');
 
         useEffect(() => {
-            console.log('sessionData:', sessionData);
         }, [sessionData]);
 
         let saveImage = async () => {
-            let postcardId = crypto.randomUUID();
             const postcardData = {
-                'id': postcardId,
+                'id': '',
+                'title': (document!.getElementById('titleInput') as HTMLInputElement).value,
                 'creator': sessionData.name,
                 'location': location,
                 'date': new Date(),

@@ -1,0 +1,33 @@
+.item {
+    margin: 10% 2%;
+}
+
+.content {
+    border: 1px solid black;
+    height: 250px;
+    width: 350px;
+}
+
+
+.image {
+    height: 250px;
+    width: fit-content;
+}
+
+.postcard-back {
+    position: relative;
+    height: 250px;
+    padding: 2%;
+}
+
+.message {
+    text-align: justify;
+}
+
+.byline {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-right: 50px;
+    margin-bottom: 50px;
+}

@@ -32,7 +32,6 @@ export const Login: React.FC<LoginProps> = ({ handleSession, handleClose, sessio
 	}
 
 	let loginUser = () => {
-		console.log('login');
 		fetch('http://localhost:5000/login', {
 			method: 'POST',
 			credentials: 'include',
@@ -56,7 +55,6 @@ export const Login: React.FC<LoginProps> = ({ handleSession, handleClose, sessio
 	}
 
 	let createUser = () => {
-		console.log('create user');
 		return fetch('http://localhost:5000/createuser', {
 			method: 'POST',
 			headers: {

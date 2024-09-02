@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import './Gallery.css';
+import { Postcard as PostcardType } from '../types';
+import { Postcard } from '../Postcard/Postcard';
 
 export const Gallery = () => {
 	const [images, setImages] = useState<{key: string, url: string}[]>([]);
+	const [postcards, setPostcards] = useState<PostcardType[]>([]);
 
 	useEffect(() => {
 		getImages();
+		getPostcards();
 	}, []);
 
 	let getImages = () => {
@@ -20,16 +24,39 @@ export const Gallery = () => {
 		.catch(error => console.error('Error:', error));
 	}
 
+	let getPostcards = () => {
+		fetch('http://localhost:5000/getpostcards')
+		.then(response => {
+			return response.json();
+		})
+		.then(data => {
+			setPostcards(data);
+			console.log('data:',data);
+			return data;
+		})
+		.catch(error => console.error('Error:', error));
+	}
+
+	let getPostcardByKey = (key: string) => {
+		const postcard = postcards.find((postcard) => postcard.id === key) ?? {
+			id: '',
+			creator: '',
+			location: '',
+			date: new Date(),
+			title: '',
+			message: '',
+		} as PostcardType;
+		console.log('postcard',postcard);
+		return postcard
+	}
+
 
 
 	return (
 		<div className='gallery-body'>
 			<div className='image-grid'>
 		      {images.map((image) => (
-		        <div className="item"  key={image.key}>
-					<img className='image' src={image.url}/>
-					<div className="title">{image.key}</div>
-				</div>
+				<Postcard postcard={getPostcardByKey(image.key)} image={image} />
 		      ))}	
     	</div>
 		</div>

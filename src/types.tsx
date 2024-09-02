@@ -8,5 +8,6 @@ export interface Postcard {
     creator: string,
     location: string,
     date: Date,
+    title: string,
     message: string,
 }

@@ -25,7 +25,6 @@ const App = () => {
         return response.json();
       })
       .then(data => {
-        console.log('data:', data);
         if (data.session.passport) {
           setSessionData({
             sid: data.sessionID,
