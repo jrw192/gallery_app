@@ -36,12 +36,6 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Credentials', true);
   next();
 });
-app.use(cors({
-  origin: process.env.REACT_APP_SITE_SOURCE, // Allow your React app's URL
-  methods: 'GET,POST,PUT,DELETE',
-  allowedHeaders: 'Content-Type,Access-Control-Allow-Headers',
-}));
-// app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
 
 app.use(express.json({ limit: '50mb' }));
