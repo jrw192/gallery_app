@@ -12,16 +12,12 @@ import {Gallery} from './Gallery/Gallery';
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <><App /></>,
     children: [
       {
         path: "/paint",
         element: <Canvas />
       },
-      {
-        path: "/gallery",
-        element: <Gallery />
-      }
     ]
   },
 ]);

@@ -1,5 +1,10 @@
 .canvas-body {
-	margin: 1%;
+	margin: 1em;
+}
+
+.left {
+	margin-right: 4em;
+	width: fit-content;
 }
 
 .palette {
@@ -19,17 +24,21 @@
 }
 
 .canvas {
-    aspect-ratio: auto 700 / 500;
+	aspect-ratio: auto 700 / 500;
 	border: 5px solid black;
 	display: inline-block;
 	/* z-index: -1; */
+}
+
+.brush-section {
+	margin-left: 20px;
 }
 
 .dot {
 	background-color: black;
 	border-radius: 50%;
 	display: inline-block;
-	margin:5px;
+	margin: 5px;
 }
 
 .canvas-wrapper {
@@ -47,4 +56,20 @@
 
 .controls {
 	margin: 2%;
+}
+
+@media (min-width:1150px) {
+	.canvas-body {
+		display: flex;
+	}
+
+	.details-body {
+		float: right;
+	}
+}
+
+@media (max-width:1149px) {
+	.details-body {
+		margin-top: 2em;
+	}
 }

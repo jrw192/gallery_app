@@ -1,4 +1,10 @@
 .image-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, 375px);
+    margin-left: 1em;
+}
+
+.gallery-title {
+    font-size: 36px;
+    margin: 0 1em 0.5em;
 }

@@ -4,8 +4,10 @@ import './UserInfo.css';
 import { SessionData } from '../types';
 import { Login } from '../Login/Login';
 
-export const UserInfo: React.FC<{handleSession: () => void;
-	sessionData: SessionData}> = ({ handleSession, sessionData }) => {
+export const UserInfo: React.FC<{
+  handleSession: () => void;
+  sessionData: SessionData
+}> = ({ handleSession, sessionData }) => {
   const [showLogin, setShowLogin] = useState(false);
   let userLogout = () => {
     fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/logout/${sessionData.sid}`)
@@ -13,10 +15,6 @@ export const UserInfo: React.FC<{handleSession: () => void;
         return response.json();
       })
       .then(data => {
-        // setSessionData({
-        //   sid: data.sessionID,
-        //   name: ''
-        // });
         handleSession();
         return data;
       })
@@ -32,15 +30,20 @@ export const UserInfo: React.FC<{handleSession: () => void;
   }
 
   return (
-      <div className='user-body'>
-        {sessionData.name ? <div className='loggedin'>
-          welcome back, {sessionData.name}.
-          <button onClick={() => userLogout()}>Logout</button>
-        </div>
-          : <button className='login-button' onClick={showLoginPanel}>Login</button>}
-        {showLogin &&
-          <Login handleSession={handleSession} handleClose={hideLoginPanel}
-            sessionData={sessionData} />}
+    <div className='user-body'>
+      {sessionData.name ? <div className='loggedin'>
+        <span>welcome back, {sessionData.name}. </span>
+        <button onClick={() => userLogout()}>logout</button>
       </div>
+        : <div className='loggedout'>
+          <span>who are you? </span>
+          <button className='login-button' onClick={showLoginPanel}>login</button>
+        </div>
+      }
+
+      {showLogin &&
+        <Login handleSession={handleSession} handleClose={hideLoginPanel}
+          sessionData={sessionData} />}
+    </div>
   );
 };

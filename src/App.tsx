@@ -2,8 +2,11 @@ import { useState, useEffect } from "react";
 import './App.css';
 import { UserInfo } from './UserInfo/UserInfo';
 import { Navigation } from './Navigation/Navigation';
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { SessionData } from './types';
+import { Gallery } from './Gallery/Gallery';
+import logo from './logo.png';
+
 
 const App = () => {
   const [sessionData, setSessionData] = useState<SessionData>({
@@ -57,11 +60,15 @@ const App = () => {
 
   return (
     <div className="App">
+      <img className='logo' src={logo} alt='logo'></img>
       <div className='top-bar'>
-        <Navigation />
         <UserInfo handleSession={() => setSessionCookieIfExists()}
           sessionData={sessionData} />
+        <Navigation />
       </div>
+      {
+        useLocation().pathname === '/' && <Gallery />
+      }
       <Outlet context={{ sessionData: sessionData }} />
     </div>
   );

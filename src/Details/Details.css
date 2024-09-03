@@ -1,0 +1,19 @@
+.details-title {
+    font-size: 20px;
+    margin: 0;
+}
+
+.details-form {
+    border: 1px dashed black;
+    padding: 2%;
+    height: fit-content;
+    width: fit-content;
+}
+
+.details-text {
+    margin: 2% 0 0;
+}
+
+.controls {
+    margin: 2% 0 0;
+}

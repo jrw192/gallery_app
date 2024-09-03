@@ -1,5 +1,13 @@
+.logo {
+  height: 5.5em;
+}
+
 .top-bar {
-  display: flex;
-  margin-top: 2%;
-  width: 100%;
+  border: 1px dashed black;
+  margin: 2em 1em;
+  width: fit-content;
+}
+
+button {
+  margin-right: 0.5em;
 }

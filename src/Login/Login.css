@@ -1,6 +1,6 @@
 .login-body {
 	background-color: white;
-	border: 2px solid black;
+	border: 1px dashed black;
 	height: 50%;
 	width: 50%;
 	position: absolute;

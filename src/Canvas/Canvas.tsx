@@ -5,7 +5,7 @@ import { Tooltip } from 'react-tooltip'
 import './Canvas.css';
 import { SessionData, Postcard } from '../types';
 import { Loader, LoaderOptions } from 'google-maps';
-import { Details} from '../Details/Details';
+import { Details } from '../Details/Details';
 
 export const Canvas = () => {
 	const colorOptions = ['black', 'brown', 'red', 'orange', 'yellow',
@@ -13,6 +13,8 @@ export const Canvas = () => {
 	let canvas: HTMLCanvasElement | null;
 	const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 	const { sessionData } = useOutletContext<{ sessionData: SessionData }>();
+	const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+
 
 	const [brushColor, setBrushColor] = useState('');
 	const [brushSize, setBrushSize] = useState(5);
@@ -29,6 +31,11 @@ export const Canvas = () => {
 			// Here we set up the properties of the canvas element. 
 			canvas.width = 700;
 			canvas.height = 500;
+			setCanvasSize({
+				height: document!.getElementById('canvas')?.offsetHeight ?? 0,
+				width: document!.getElementById('canvas')?.offsetWidth ?? 0,
+			});
+
 			ctxRef.current = canvas.getContext('2d');
 			if (ctxRef.current) {
 				clear();
@@ -149,7 +156,7 @@ export const Canvas = () => {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-				  },
+				},
 				body: JSON.stringify(postcardData),
 			})
 				.then(response => {
@@ -170,39 +177,41 @@ export const Canvas = () => {
 
 	return (
 		<div className='canvas-body'>
+			<div className='left'>
+				<div className='palette'>
+					<div style={{
+						backgroundColor: brushColor,
+						borderRadius: '50%',
+					}}></div>
+					{colorOptions.map((c) => <div className='colorOption' style={{ backgroundColor: c }} onClick={setColor}></div>)}
+					<div style={{ height: '20px', width: '20px', border: '1px solid black' }}
+						onClick={erase}>E</div>
+				</div>
+				<div className='canvas-wrapper' style={{ height: `${canvasSize.height}px`, width: `${canvasSize.width}px` }}>
+					<canvas className='canvas' id='canvas'
+						// We use the ref attribute to get direct access to the canvas element. 
+						ref={(ref) => (canvas = ref)}
+						style={{ position: 'absolute', display: 'inline-block' }}
+						onMouseDown={startPainting}
+						onMouseLeave={stopPainting}
+						onMouseUp={stopPainting}
+						onMouseMove={createLine}
+					/>
+				</div>
+				<div className='brush-section'>
+					<span>brush size</span>
+					<input className='range' type='range'
+						value={brushSize}
+						onChange={handleBrushSize}
+						min='1' max='50'>
+					</input>
+					<span className='dot' style={{
+						height: `${brushSize}px`,
+						width: `${brushSize}px`,
+					}}></span>
+				</div>
+			</div>
 			<Details clear={clear} saveData={saveData} />
-			<div className='brush-section'>
-				<input className='range' type='range'
-					value={brushSize}
-					onChange={handleBrushSize}
-					min='1' max='50'>
-				</input>
-				<span className='dot' style={{
-					height: `${brushSize}px`,
-					width: `${brushSize}px`,
-				}}></span>
-				<span>brush size</span>
-			</div>
-			<div className='palette'>
-				<div style={{
-					backgroundColor: brushColor,
-					borderRadius: '50%',
-				}}></div>
-				{colorOptions.map((c) => <div className='colorOption' style={{ backgroundColor: c }} onClick={setColor}></div>)}
-				<div style={{ height: '20px', width: '20px', border: '1px solid black' }}
-					onClick={erase}>E</div>
-			</div>
-			<div className='canvas-wrapper'>
-				<canvas className='canvas'
-					// We use the ref attribute to get direct access to the canvas element. 
-					ref={(ref) => (canvas = ref)}
-					style={{ position: 'absolute', display: 'inline-block' }}
-					onMouseDown={startPainting}
-					onMouseLeave={stopPainting}
-					onMouseUp={stopPainting}
-					onMouseMove={createLine}
-				/>
-			</div>
 		</div >
 	)
 };

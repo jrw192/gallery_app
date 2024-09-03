@@ -52,6 +52,7 @@ export const Gallery = () => {
 
 	return (
 		<div className='gallery-body'>
+			<p className='gallery-title'>postcard gallery</p>
 			<div className='image-grid'>
 		      {images.map((image) => (
 				<Postcard postcard={getPostcardByKey(image.key)} image={image} />
