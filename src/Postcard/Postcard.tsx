@@ -8,6 +8,7 @@ export const Postcard: React.FC<{
 }>
     = ({ postcard, image }) => {
         const [showBack, setShowBack] = useState(false);
+        const date = new Date(postcard.date).toDateString();
 
         let flipPostcard = () => {
             setShowBack(!showBack);
@@ -19,6 +20,8 @@ export const Postcard: React.FC<{
                     <div className='message'>{postcard.message}</div>
                     <br />
                     <span className='byline'>- {postcard.creator}</span>
+                    <br />
+                    <span className='date'>{date}</span>
                 </div>
                 : <img className='image' src={image.url}/>;
         }

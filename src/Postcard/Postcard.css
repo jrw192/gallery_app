@@ -29,5 +29,13 @@
     bottom: 0;
     right: 0;
     margin-right: 50px;
+    margin-bottom: 100px;
+}
+
+.date {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-right: 50px;
     margin-bottom: 50px;
 }
