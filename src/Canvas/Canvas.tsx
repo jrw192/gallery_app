@@ -105,6 +105,7 @@ export const Canvas = () => {
 	}
 
 	let setColor = (e: React.MouseEvent<Element, MouseEvent>) => {
+		console.log('setcolor');
 		setBrushColor(window.getComputedStyle(e.target as Element, null)
 			.getPropertyValue('background-color'));
 		if (ctxRef.current) {

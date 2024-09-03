@@ -9,6 +9,8 @@
 
 .palette {
 	float: left;
+	position: relative;
+	z-index: 100;
 }
 
 .colorOption {
