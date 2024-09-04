@@ -25,6 +25,7 @@ const App = () => {
       credentials: 'include'
     })
       .then(response => {
+        console.log('setSessionCookieIfExistsResponse', response);
         return response.json();
       })
       .then(data => {

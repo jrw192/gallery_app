@@ -162,6 +162,7 @@ app.get('/logout/:sid', (req, res) => {
 });
 
 app.get('/session', (req, res) => {
+  console.log('req.session',req.session);
   if (req.session) {
     res.status(200).json({
       sessionID: req.sessionID,
