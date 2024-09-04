@@ -16,6 +16,7 @@ const App = () => {
 
   useEffect(() => {
     setSessionCookieIfExists();
+    console.log(sessionData);
   }, []);
 
   const setSessionCookieIfExists = () => {
@@ -28,6 +29,7 @@ const App = () => {
       })
       .then(data => {
         if (data.session.passport) {
+          console.log('setSessionCookieIfExists', data);
           setSessionData({
             sid: data.sessionID,
             name: data.session.passport.user
