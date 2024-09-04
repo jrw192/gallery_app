@@ -45,8 +45,9 @@ app.use(session({
   resave: true,
   saveUninitialized: false,
   cookie: {
-    secure: false,
-    httpOnly: true,
+    secure: true,
+    httpOnly: process.env.REACT_ENV === 'production',
+    sameSite: 'Lax',
     maxAge: 24 * 60 * 60 * 1000 // 24 hours,
   },
   store: new pgSession({
