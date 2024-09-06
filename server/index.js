@@ -139,11 +139,12 @@ app.post('/api/login', passport.authenticate('local', {
   keepSessionInfo: true
 }), (req, res) => {
   req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // Cookie expires after 30 days
+  res.cookie('session', req.session);
   req.logIn(req.user, (err) => {
     if (err) { return next(err); }
     console.log('login req.session: ', req.session);
     res.status(200).send({ sid: req.sessionID, name: req.session.passport.user });
-    res.cookie('session', req.session);
+    res.cookie('session1', req.session);
   });
 });
 
@@ -166,7 +167,7 @@ app.get('/api/logout/:sid', (req, res) => {
 });
 
 app.get('/api/session', (req, res) => {
-  console.log('req.session',req.cookies.session);
+  // console.log('req.cookies',req.cookies);
   if (req.session) {
     res.status(200).json({
       sessionID: req.sessionID,
