@@ -159,7 +159,7 @@ app.get('/api/logout/:sid', (req, res) => {
       res.status(500).send(err);
     }
     else {
-      res.clearCookie('session', res.session.cookie);
+      res.clearCookie('session', req.session.cookie);
       pool.query('DELETE FROM user_sessions WHERE sid = $1', [sessionId]).then(() => {
         console.log('successfully logged out');
         res.redirect('/');
