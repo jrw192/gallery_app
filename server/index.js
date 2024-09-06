@@ -1,7 +1,9 @@
 const express = require('express');
-const app = express();
 const session = require('express-session');
-const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
+const app = express();
+app.use(cookieParser());
 
 const port = process.env.PORT || 4000;
 
