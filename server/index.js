@@ -150,14 +150,18 @@ app.post('/api/login', passport.authenticate('local', {
 app.get('/api/logout/:sid', (req, res) => {
   const sessionId = req.params.sid;
   console.log('logout session');
-  console.log(JSON.stringify(req.cookies.session));
   
   req.logout((err) => {
     if (err) {
       res.status(500).send(err);
     }
     else {
-      res.clearCookie('session', req.cookies.session.session.cookie);
+      res.clearCookie('session', {
+        secure: true,
+        httpOnly: process.env.REACT_ENV === 'production',
+        sameSite: 'None',
+        maxAge: 30 * 24 * 60 * 60 * 1000 // Cookie expires after 30 days
+      });
       pool.query('DELETE FROM user_sessions WHERE sid = $1', [sessionId]).then(() => {
         console.log('successfully logged out');
         res.redirect('/');
