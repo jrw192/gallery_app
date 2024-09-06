@@ -50,7 +50,7 @@ app.use(session({
     secure: true,
     httpOnly: process.env.REACT_ENV === 'production',
     sameSite: 'None',
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours,
+    maxAge: 30 * 24 * 60 * 60 * 1000 // Cookie expires after 30 days
   },
   store: new pgSession({
     pool: pool,
@@ -140,7 +140,6 @@ app.post('/api/login', passport.authenticate('local', {
   failureFlash: true,
   keepSessionInfo: true
 }), (req, res) => {
-  req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // Cookie expires after 30 days
   req.logIn(req.user, (err) => {
     if (err) { return next(err); }
     res.cookie('session', { sid: req.sessionID, session: req.session}, req.session.cookie);
@@ -151,7 +150,7 @@ app.post('/api/login', passport.authenticate('local', {
 app.get('/api/logout/:sid', (req, res) => {
   const sessionId = req.params.sid;
   console.log('logout session');
-  console.log(JSON.stringify(req.cookies.session.session));
+  console.log(JSON.stringify(req.cookies.session.session.cookie));
   
   req.logout((err) => {
     if (err) {
