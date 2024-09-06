@@ -141,8 +141,7 @@ app.post('/api/login', passport.authenticate('local', {
   req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // Cookie expires after 30 days
   req.logIn(req.user, (err) => {
     if (err) { return next(err); }
-    console.log('login req.session: ', req.session);
-    res.cookie('sid', req.sessionID);
+    res.cookie('sid', req.sessionID, req.session.cookie);
     res.status(200).send({ sid: req.sessionID, name: req.session.passport.user });
   });
 });
