@@ -48,7 +48,6 @@ app.use(session({
     secure: true,
     httpOnly: process.env.REACT_ENV === 'production',
     sameSite: 'None',
-    domain: 'postcards-server.onrender.com',
     maxAge: 24 * 60 * 60 * 1000 // 24 hours,
   },
   store: new pgSession({
@@ -76,6 +75,7 @@ passport.use(new LocalStrategy(
 ));
 
 passport.serializeUser(function (user, done) {
+  console.log('serializing user: ', user);
   done(null, user.username);
 });
 
@@ -141,6 +141,7 @@ app.post('/api/login', passport.authenticate('local', {
   req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // Cookie expires after 30 days
   req.logIn(req.user, (err) => {
     if (err) { return next(err); }
+    console.log('login req: ', req);
     res.status(200).send({ sid: req.sessionID, name: req.session.passport.user });
   });
 });
