@@ -181,7 +181,9 @@ app.get('/api/session', (req, res) => {
       sessionID: sess.sid,
       session: sess.session});
   } else {
-    res.status(500).send('No user logged in');
+    res.status(200).send({
+      sessionID: '',
+      session: ''});
   }
 });
 
