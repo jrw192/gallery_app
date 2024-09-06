@@ -145,7 +145,7 @@ app.post('/api/login', passport.authenticate('local', {
     if (err) { return next(err); }
     console.log('login req.session: ', req.session);
     res.status(200).send({ sid: req.sessionID, name: req.session.passport.user });
-    res.cookie('session', req.session);
+    // res.cookie('session', req.session);
   });
 });
 
