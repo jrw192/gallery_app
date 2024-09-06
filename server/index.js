@@ -48,6 +48,7 @@ app.use(session({
     secure: true,
     httpOnly: process.env.REACT_ENV === 'production',
     sameSite: 'None',
+    domain: 'postcards-server.onrender.com',
     maxAge: 24 * 60 * 60 * 1000 // 24 hours,
   },
   store: new pgSession({
