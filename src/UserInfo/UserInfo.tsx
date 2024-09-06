@@ -16,9 +16,11 @@ export const UserInfo: React.FC<{
       credentials: 'include'
     })
       .then(response => {
+        console.log('response:',response);
         return response.json();
       })
       .then(data => {
+        console.log('data',data);
         handleSession();
         return data;
       })
