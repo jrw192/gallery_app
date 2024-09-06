@@ -161,7 +161,7 @@ app.get('/api/logout/:sid', (req, res) => {
         maxAge: 30 * 24 * 60 * 60 * 1000 // Cookie expires after 30 days
       });
       pool.query('DELETE FROM user_sessions WHERE sid = $1', [sessionId]).then(() => {
-        res.status(200).json({});
+        res.status(200);
         res.redirect('/');
       })
         .catch((err) => {
