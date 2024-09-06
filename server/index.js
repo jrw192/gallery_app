@@ -144,7 +144,7 @@ app.post('/api/login', passport.authenticate('local', {
     if (err) { return next(err); }
     console.log('login req.session: ', req.session);
     res.status(200).send({ sid: req.sessionID, name: req.session.passport.user });
-    res.cookie('session1', req.session);
+    // res.cookie('session1', req.session);
   });
 });
 
@@ -167,7 +167,7 @@ app.get('/api/logout/:sid', (req, res) => {
 });
 
 app.get('/api/session', (req, res) => {
-  // console.log('req.cookies',req.cookies);
+  console.log('req.cookies',req);
   if (req.session) {
     res.status(200).json({
       sessionID: req.sessionID,
