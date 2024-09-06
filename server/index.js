@@ -169,6 +169,7 @@ app.get('/api/logout/:sid', (req, res) => {
         .catch((err) => {
           console.log('error:', err);
         });
+        res.status(200).send(res);
     }
   });
 });
