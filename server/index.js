@@ -174,7 +174,7 @@ app.get('/api/session', (req, res) => {
   const sess = req.cookies.session;
   if (sess) {
     res.status(200).json({
-      sessionID: sess.sessionID,
+      sessionID: sess.sid,
       session: sess.session});
   } else {
     res.status(500).send('No user logged in');
