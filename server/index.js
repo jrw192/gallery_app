@@ -77,7 +77,6 @@ passport.use(new LocalStrategy(
 ));
 
 passport.serializeUser(function (user, done) {
-  console.log('serializing user: ', user);
   done(null, user.username);
 });
 
@@ -149,7 +148,6 @@ app.post('/api/login', passport.authenticate('local', {
 
 app.get('/api/logout/:sid', (req, res) => {
   const sessionId = req.params.sid;
-  console.log('logout session');
   
   req.logout((err) => {
     if (err) {
@@ -163,20 +161,19 @@ app.get('/api/logout/:sid', (req, res) => {
         maxAge: 30 * 24 * 60 * 60 * 1000 // Cookie expires after 30 days
       });
       pool.query('DELETE FROM user_sessions WHERE sid = $1', [sessionId]).then(() => {
-        console.log('successfully logged out');
+        res.status(200).send('logged out');
         res.redirect('/');
       })
         .catch((err) => {
           console.log('error:', err);
+          res.status(500).send(err);
         });
-        res.status(200).send(res);
     }
   });
 });
 
 app.get('/api/session', (req, res) => {
   const sess = req.cookies.session;
-  console.log('req.cookies.session',JSON.stringify(sess));
   if (sess) {
     res.status(200).json({
       sessionID: sess.sid,
