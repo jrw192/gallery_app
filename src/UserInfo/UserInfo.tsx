@@ -10,7 +10,7 @@ export const UserInfo: React.FC<{
 }> = ({ handleSession, sessionData }) => {
   const [showLogin, setShowLogin] = useState(false);
   let userLogout = () => {
-    fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/logout/${sessionData.sid}`)
+    fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/api/logout/${sessionData.sid}`)
       .then(response => {
         return response.json();
       })
