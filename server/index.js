@@ -150,6 +150,10 @@ app.post('/api/login', passport.authenticate('local', {
 
 app.get('/api/logout/:sid', (req, res) => {
   const sessionId = req.params.sid;
+  console.log('logout session');
+  console.log(req.session);
+  console.log(req.sessionID);
+  
   req.logout((err) => {
     if (err) {
       res.status(500).send(err);
