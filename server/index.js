@@ -151,7 +151,7 @@ app.post('/api/login', passport.authenticate('local', {
 app.get('/api/logout/:sid', (req, res) => {
   const sessionId = req.params.sid;
   console.log('logout session');
-  console.log(req.cookies.session.session.cookie);
+  console.log(req.cookies.session);
   
   req.logout((err) => {
     if (err) {
