@@ -170,8 +170,8 @@ app.get('/api/logout/:sid', (req, res) => {
 });
 
 app.get('/api/session', (req, res) => {
-  console.log('req.cookies',req.cookies);
   const sess = req.cookies.session;
+  console.log('req.cookies.session',JSON.stringify(sess));
   if (sess) {
     res.status(200).json({
       sessionID: sess.sid,
