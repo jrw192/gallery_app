@@ -43,7 +43,7 @@ export const Location: React.FC<{ setLocation: (location: string) => void }>
         };
 
         let getCities = () => {
-            return fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/getcities`)
+            return fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/api/getcities`)
                 .then(response => {
                     return response.json();
                 })
