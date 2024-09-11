@@ -11,7 +11,7 @@ export const UserInfo: React.FC<{
   const [showLogin, setShowLogin] = useState(false);
   console.log('sessionData:',sessionData);
   let userLogout = () => {
-    fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/api/logout/${sessionData.sid}`, {
+    fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/logout/${sessionData.sid}`, {
       method: 'GET',
       credentials: 'include'
     })

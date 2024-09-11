@@ -19,6 +19,7 @@ export const Login: React.FC<LoginProps> = ({ handleSession, handleClose, sessio
 
 	useEffect(() => {
 		getUserNames().then(n => setNames(n));
+		console.log('names:',names);
 	}, [updateNames]);
 
 	let handleUserLogin = () => {
@@ -32,7 +33,7 @@ export const Login: React.FC<LoginProps> = ({ handleSession, handleClose, sessio
 	}
 
 	let loginUser = () => {
-		fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/api/login`, {
+		fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/login`, {
 			method: 'POST',
 			credentials: 'include',
 			headers: {
@@ -55,7 +56,7 @@ export const Login: React.FC<LoginProps> = ({ handleSession, handleClose, sessio
 	}
 
 	let createUser = () => {
-		return fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/api/createuser`, {
+		return fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/createuser`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -78,7 +79,7 @@ export const Login: React.FC<LoginProps> = ({ handleSession, handleClose, sessio
 	}
 
 	let getUserNames = () => {
-		return fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/api/names`)
+		return fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/names`)
 			.then(response => {
 				return response.json();
 			})

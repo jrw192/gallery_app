@@ -20,7 +20,7 @@ const App = () => {
   }, []);
 
   const setSessionCookieIfExists = () => {
-    fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/api/session`, {
+    fetch(`${process.env.REACT_APP_SERVER_HOSTNAME}/session`, {
       method: 'GET',
       credentials: 'include'
     })
@@ -47,7 +47,7 @@ const App = () => {
   }
 
   let userLogout = () => {
-    fetch(`${process.env.SERVER_HOSTNAME}/api/logout/${sessionData.sid}`)
+    fetch(`${process.env.SERVER_HOSTNAME}/logout/${sessionData.sid}`)
       .then(response => {
         return response.json();
       })

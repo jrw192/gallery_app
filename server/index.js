@@ -91,7 +91,7 @@ passport.deserializeUser(function (username, done) {
 // ----------- API -------------
 
 // user api
-app.get('/api/users', (req, res) => {
+app.get('/users', (req, res) => {
   userService.getUsers()
     .then((response) => {
       res.status(200).send(response);
@@ -101,7 +101,7 @@ app.get('/api/users', (req, res) => {
     })
 });
 
-app.get('/api/names', (req, res) => {
+app.get('/names', (req, res) => {
   userService.getUserNames()
     .then((response) => {
       res.status(200).send(response);
@@ -111,7 +111,7 @@ app.get('/api/names', (req, res) => {
     })
 });
 
-app.get('/api/user/:id', (req, res) => {
+app.get('/user/:id', (req, res) => {
   const id = req.params.id;
   userService.getUserByName(id)
     .then((response) => {
@@ -123,7 +123,7 @@ app.get('/api/user/:id', (req, res) => {
 });
 
 // create account
-app.post('/api/createuser', (req, res) => {
+app.post('/createuser', (req, res) => {
   userService.createUser(req.body)
     .then((response) => {
       res.status(200).send(response);
@@ -134,7 +134,7 @@ app.post('/api/createuser', (req, res) => {
 });
 
 // account session api
-app.post('/api/login', passport.authenticate('local', {
+app.post('/login', passport.authenticate('local', {
   failureRedirect: '/home',
   failureFlash: true,
   keepSessionInfo: true
@@ -146,7 +146,7 @@ app.post('/api/login', passport.authenticate('local', {
   });
 });
 
-app.get('/api/logout/:sid', (req, res) => {
+app.get('/logout/:sid', (req, res) => {
   const sessionId = req.params.sid;
   
   req.logout((err) => {
@@ -172,7 +172,7 @@ app.get('/api/logout/:sid', (req, res) => {
   });
 });
 
-app.get('/api/session', (req, res) => {
+app.get('/session', (req, res) => {
   const sess = req.cookies.session;
   if (sess) {
     res.status(200).json({
@@ -186,7 +186,7 @@ app.get('/api/session', (req, res) => {
 });
 
 // image api
-app.get('/api/images', async (req, res) => {
+app.get('/images', async (req, res) => {
   s3Service.getAllImages()
     .then((response) => {
       res.status(200).send(response);
@@ -196,7 +196,7 @@ app.get('/api/images', async (req, res) => {
     })
 });
 
-app.post('/api/saveimage/:id', (req, res) => {
+app.post('/saveimage/:id', (req, res) => {
   const id = req.params.id;
   s3Service.saveImage(id, req.body)
     .then((response) => {
@@ -208,7 +208,7 @@ app.post('/api/saveimage/:id', (req, res) => {
 });
 
 // postcard data
-app.post('/api/savepostcard/:id', (req, res) => {
+app.post('/savepostcard/:id', (req, res) => {
   const postcard = req.body;
   postcardService.savePostcard(postcard)
     .then((response) => {
@@ -219,7 +219,7 @@ app.post('/api/savepostcard/:id', (req, res) => {
     })
 })
 
-app.get('/api/getpostcards', (req, res) => {
+app.get('/getpostcards', (req, res) => {
   postcardService.getAllPostcards()
   .then((response) => {
     res.status(200).send(response);
@@ -229,7 +229,7 @@ app.get('/api/getpostcards', (req, res) => {
   });
 });
 
-app.post('/api/savecity', (req, res) => {
+app.post('/savecity', (req, res) => {
   const body = req.body;
   locationService.saveCity(body)
   .then((response) => {
@@ -238,7 +238,7 @@ app.post('/api/savecity', (req, res) => {
   .catch(err => res.status(500).send(err));
 });
 
-app.get('/api/getcities', (req, res) => {
+app.get('/getcities', (req, res) => {
   locationService.getCities()
   .then((response) => {
     res.status(200).send(response);
